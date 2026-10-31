@@ -1,4 +1,4 @@
-// Brightloop Software Application Client - Premium Midnight Indigo Edition with Dramatic Typography
+// Brightloop Software Application Client - Premium Light & Midnight Indigo Edition
 let currentRole = "admin";
 let cashflowChart = null;
 let currentSubscriptions = [];
@@ -8,15 +8,7 @@ let currentProducts = [];
 let currentPlans = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Global Chart.js dark theme defaults with dramatic typography
-  if (window.Chart) {
-    Chart.defaults.color = '#A1A1AA';
-    Chart.defaults.borderColor = 'rgba(41, 52, 73, 0.6)';
-    Chart.defaults.font.family = "'Outfit', 'Plus Jakarta Sans', sans-serif";
-    Chart.defaults.font.weight = 600;
-  }
-
-  lucide.createIcons();
+  setupThemeToggle();
   setupNavigation();
   setupTimeTravel();
   setupRoleSwitcher();
@@ -24,15 +16,57 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshAll();
 });
 
+function setupThemeToggle() {
+  const toggleBtn = document.getElementById("btn-theme-toggle");
+  if (!toggleBtn) return;
+
+  toggleBtn.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.contains("dark");
+    const newTheme = isDark ? "light" : "dark";
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", newTheme);
+    updateChartTheme(newTheme === "dark");
+    lucide.createIcons();
+  });
+}
+
+function updateChartTheme(isDark) {
+  if (!cashflowChart) return;
+
+  const textColor = isDark ? '#A1A1AA' : '#64748B';
+  const headingColor = isDark ? '#F8FAFC' : '#0F172A';
+  const gridColor = isDark ? 'rgba(41, 52, 73, 0.4)' : 'rgba(226, 232, 240, 0.8)';
+  const tooltipBg = isDark ? '#111A2D' : '#FFFFFF';
+  const tooltipBorder = isDark ? '#293449' : '#E2E8F0';
+
+  cashflowChart.options.plugins.legend.labels.color = headingColor;
+  cashflowChart.options.plugins.tooltip.backgroundColor = tooltipBg;
+  cashflowChart.options.plugins.tooltip.titleColor = headingColor;
+  cashflowChart.options.plugins.tooltip.bodyColor = headingColor;
+  cashflowChart.options.plugins.tooltip.borderColor = tooltipBorder;
+
+  cashflowChart.options.scales.x.ticks.color = textColor;
+  cashflowChart.options.scales.x.grid.color = gridColor;
+
+  cashflowChart.options.scales.y.ticks.color = textColor;
+  cashflowChart.options.scales.y.grid.color = gridColor;
+
+  cashflowChart.update();
+}
+
 function setupNavigation() {
   document.querySelectorAll(".nav-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".nav-tab").forEach(t => {
         t.classList.remove("active", "border-[#6366F1]", "text-[#6366F1]", "border-indigo-600", "text-indigo-600");
-        t.classList.add("border-transparent", "text-[#A1A1AA]");
+        t.classList.add("border-transparent", "text-slate-600", "dark:text-[#A1A1AA]");
       });
       tab.classList.add("active", "border-[#6366F1]", "text-[#6366F1]");
-      tab.classList.remove("border-transparent", "text-[#A1A1AA]");
+      tab.classList.remove("border-transparent", "text-slate-600", "dark:text-[#A1A1AA]");
 
       const target = tab.dataset.tab;
       document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.add("hidden"));
@@ -192,16 +226,16 @@ async function loadDashboard() {
   const topList = document.getElementById("top-overdue-list");
   if (d.top_overdue_customers && d.top_overdue_customers.length > 0) {
     topList.innerHTML = d.top_overdue_customers.map(c => `
-      <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111A2D] border border-[#293449] hover:border-[#6366F1]/50 transition shadow-sm">
+      <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-[#111A2D] border border-slate-200 dark:border-[#293449] hover:border-indigo-400 dark:hover:border-[#6366F1]/50 transition shadow-sm">
         <div>
-          <div class="font-display font-bold text-white text-sm tracking-tight">${c.name}</div>
-          <div class="micro-label text-[9.5px] text-[#EF4444] font-extrabold mt-0.5">${c.count} unpaid invoice(s)</div>
+          <div class="font-display font-bold text-slate-900 dark:text-white text-sm tracking-tight">${c.name}</div>
+          <div class="micro-label text-[9.5px] text-rose-600 dark:text-[#EF4444] font-extrabold mt-0.5">${c.count} unpaid invoice(s)</div>
         </div>
-        <div class="font-mono font-black text-sm text-[#EF4444]">₹${c.amount}</div>
+        <div class="font-mono font-black text-sm text-rose-600 dark:text-[#EF4444]">₹${c.amount}</div>
       </div>
     `).join("");
   } else {
-    topList.innerHTML = `<div class="text-[#A1A1AA] text-xs italic py-2">No overdue accounts detected!</div>`;
+    topList.innerHTML = `<div class="text-slate-400 dark:text-[#A1A1AA] text-xs italic py-2">No overdue accounts detected!</div>`;
   }
 
   // Render Cashflow Chart
@@ -211,6 +245,13 @@ async function loadDashboard() {
 function renderChart(invoiced, collected) {
   const ctx = document.getElementById("cashflow-chart").getContext("2d");
   if (cashflowChart) cashflowChart.destroy();
+
+  const isDark = document.documentElement.classList.contains("dark");
+  const textColor = isDark ? '#A1A1AA' : '#64748B';
+  const headingColor = isDark ? '#F8FAFC' : '#0F172A';
+  const gridColor = isDark ? 'rgba(41, 52, 73, 0.4)' : 'rgba(226, 232, 240, 0.8)';
+  const tooltipBg = isDark ? '#111A2D' : '#FFFFFF';
+  const tooltipBorder = isDark ? '#293449' : '#E2E8F0';
 
   cashflowChart = new Chart(ctx, {
     type: "bar",
@@ -227,8 +268,8 @@ function renderChart(invoiced, collected) {
         {
           label: "Cash Collected",
           data: [collected * 0.8, collected * 0.9, collected],
-          backgroundColor: "#22D3EE",
-          hoverBackgroundColor: "#06B6D4",
+          backgroundColor: isDark ? "#22D3EE" : "#0284C7",
+          hoverBackgroundColor: isDark ? "#06B6D4" : "#0369A1",
           borderRadius: 8
         }
       ]
@@ -240,17 +281,17 @@ function renderChart(invoiced, collected) {
         legend: {
           position: "top",
           labels: {
-            color: "#F8FAFC",
+            color: headingColor,
             font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12, weight: 700 },
             boxWidth: 14,
             padding: 16
           }
         },
         tooltip: {
-          backgroundColor: "#111A2D",
-          titleColor: "#F8FAFC",
-          bodyColor: "#F8FAFC",
-          borderColor: "#293449",
+          backgroundColor: tooltipBg,
+          titleColor: headingColor,
+          bodyColor: headingColor,
+          borderColor: tooltipBorder,
           borderWidth: 1,
           padding: 12,
           cornerRadius: 10,
@@ -261,21 +302,21 @@ function renderChart(invoiced, collected) {
       scales: {
         x: {
           ticks: {
-            color: "#A1A1AA",
+            color: textColor,
             font: { family: "'Outfit', sans-serif", size: 12, weight: 600 }
           },
           grid: {
-            color: "rgba(41, 52, 73, 0.4)"
+            color: gridColor
           }
         },
         y: {
           ticks: {
-            color: "#A1A1AA",
+            color: textColor,
             font: { family: "'JetBrains Mono', monospace", size: 11, weight: 600 },
             callback: (v) => "₹" + Number(v).toLocaleString()
           },
           grid: {
-            color: "rgba(41, 52, 73, 0.4)"
+            color: gridColor
           }
         }
       }
@@ -291,22 +332,22 @@ async function loadSubscriptions() {
   tbody.innerHTML = currentSubscriptions.map(s => {
     const statusBadge = getStatusBadge(s.status, s.is_paused);
     const actionBtns = s.allowed_actions.map(act => `
-      <button onclick="triggerSubAction('${s.id}', '${act}')" class="px-2.5 py-1 rounded-lg micro-label text-[10px] font-extrabold bg-[#111A2D] hover:bg-[#1B2541] text-[#A1A1AA] hover:text-[#F8FAFC] border border-[#293449] hover:border-[#6366F1] transition shadow-sm ml-1 tracking-wider">
+      <button onclick="triggerSubAction('${s.id}', '${act}')" class="px-2.5 py-1 rounded-lg micro-label text-[10px] font-extrabold bg-slate-100 hover:bg-slate-200 dark:bg-[#111A2D] dark:hover:bg-[#1B2541] text-slate-700 hover:text-slate-900 dark:text-[#A1A1AA] dark:hover:text-[#F8FAFC] border border-slate-200 dark:border-[#293449] hover:border-indigo-400 dark:hover:border-[#6366F1] transition shadow-sm ml-1 tracking-wider">
         ${act.replace('_', ' ')}
       </button>
     `).join("");
 
     return `
-      <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
-        <td class="p-3.5 font-mono font-black text-xs text-[#22D3EE] tracking-wide">${s.number}</td>
-        <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${s.customer_name}</td>
-        <td class="p-3.5 text-[#A1A1AA] font-medium">${s.plan_name}</td>
+      <tr class="hover:bg-slate-50 dark:hover:bg-[#1B2541]/50 border-b border-slate-100 dark:border-[#293449]/60 transition-colors">
+        <td class="p-3.5 font-mono font-black text-xs text-indigo-600 dark:text-[#22D3EE] tracking-wide">${s.number}</td>
+        <td class="p-3.5 font-display font-bold text-slate-900 dark:text-white text-sm tracking-tight">${s.customer_name}</td>
+        <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-medium">${s.plan_name}</td>
         <td class="p-3.5">${statusBadge}</td>
-        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${s.start_date}</td>
-        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${s.expiry_date}</td>
-        <td class="p-3.5 text-indigo-400 font-bold font-mono text-xs">${s.next_billing_date || '—'}</td>
-        <td class="p-3.5 text-right font-mono font-black text-sm text-white">₹${s.total}</td>
-        <td class="p-3.5 text-right whitespace-nowrap">${actionBtns || '<span class="text-[#A1A1AA]/50 text-xs">—</span>'}</td>
+        <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${s.start_date}</td>
+        <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${s.expiry_date}</td>
+        <td class="p-3.5 text-indigo-600 dark:text-indigo-400 font-bold font-mono text-xs">${s.next_billing_date || '—'}</td>
+        <td class="p-3.5 text-right font-mono font-black text-sm text-slate-900 dark:text-white">₹${s.total}</td>
+        <td class="p-3.5 text-right whitespace-nowrap">${actionBtns || '<span class="text-slate-400 dark:text-[#A1A1AA]/50 text-xs">—</span>'}</td>
       </tr>
     `;
   }).join("");
@@ -347,17 +388,17 @@ async function loadInvoices() {
     const canPay = inv.status === "confirmed" && parseFloat(inv.amount_due) > 0;
 
     return `
-      <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
-        <td class="p-3.5 font-mono font-black text-xs text-[#22D3EE] hover:text-cyan-300 cursor-pointer transition underline-offset-2 hover:underline tracking-wide" onclick="openInvoiceModal('${inv.id}')">${inv.number}</td>
-        <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${inv.customer_name}</td>
-        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${inv.invoice_date}</td>
-        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${inv.due_date}</td>
-        <td class="p-3.5 text-right font-mono text-xs text-[#A1A1AA]">₹${inv.untaxed_total}</td>
-        <td class="p-3.5 text-right font-mono text-xs text-[#22C55E] font-bold">₹${inv.discount_total}</td>
-        <td class="p-3.5 text-right font-mono text-xs text-[#A1A1AA]">₹${inv.tax_total}</td>
-        <td class="p-3.5 text-right font-mono font-black text-sm text-white">₹${inv.total}</td>
-        <td class="p-3.5 text-right font-mono font-bold text-xs text-[#22C55E]">₹${inv.amount_paid}</td>
-        <td class="p-3.5 text-right font-mono font-black text-sm ${parseFloat(inv.amount_due) > 0 ? 'text-[#EF4444]' : 'text-[#A1A1AA]'}">₹${inv.amount_due}</td>
+      <tr class="hover:bg-slate-50 dark:hover:bg-[#1B2541]/50 border-b border-slate-100 dark:border-[#293449]/60 transition-colors">
+        <td class="p-3.5 font-mono font-black text-xs text-indigo-600 dark:text-[#22D3EE] hover:text-indigo-800 dark:hover:text-cyan-300 cursor-pointer transition underline-offset-2 hover:underline tracking-wide" onclick="openInvoiceModal('${inv.id}')">${inv.number}</td>
+        <td class="p-3.5 font-display font-bold text-slate-900 dark:text-white text-sm tracking-tight">${inv.customer_name}</td>
+        <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${inv.invoice_date}</td>
+        <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${inv.due_date}</td>
+        <td class="p-3.5 text-right font-mono text-xs text-slate-600 dark:text-[#A1A1AA]">₹${inv.untaxed_total}</td>
+        <td class="p-3.5 text-right font-mono text-xs text-emerald-600 dark:text-[#22C55E] font-bold">₹${inv.discount_total}</td>
+        <td class="p-3.5 text-right font-mono text-xs text-slate-600 dark:text-[#A1A1AA]">₹${inv.tax_total}</td>
+        <td class="p-3.5 text-right font-mono font-black text-sm text-slate-900 dark:text-white">₹${inv.total}</td>
+        <td class="p-3.5 text-right font-mono font-bold text-xs text-emerald-600 dark:text-[#22C55E]">₹${inv.amount_paid}</td>
+        <td class="p-3.5 text-right font-mono font-black text-sm ${parseFloat(inv.amount_due) > 0 ? 'text-rose-600 dark:text-[#EF4444]' : 'text-slate-400 dark:text-[#A1A1AA]'}">₹${inv.amount_due}</td>
         <td class="p-3.5">${statusChip}</td>
         <td class="p-3.5 text-right whitespace-nowrap">
           ${canPay ? `
@@ -365,7 +406,7 @@ async function loadInvoices() {
               Pay
             </button>
           ` : ''}
-          <button onclick="openInvoiceModal('${inv.id}')" class="bg-[#111A2D] hover:bg-[#1B2541] text-[#A1A1AA] hover:text-[#F8FAFC] border border-[#293449] hover:border-[#6366F1] px-2.5 py-1.5 rounded-lg font-display font-bold text-xs transition ml-1 tracking-wide">
+          <button onclick="openInvoiceModal('${inv.id}')" class="bg-slate-100 hover:bg-slate-200 dark:bg-[#111A2D] dark:hover:bg-[#1B2541] text-slate-700 hover:text-slate-900 dark:text-[#A1A1AA] dark:hover:text-[#F8FAFC] border border-slate-200 dark:border-[#293449] hover:border-indigo-400 dark:hover:border-[#6366F1] px-2.5 py-1.5 rounded-lg font-display font-bold text-xs transition ml-1 tracking-wide">
             Receipt
           </button>
         </td>
@@ -380,23 +421,23 @@ async function loadPayments() {
 
   const tbody = document.getElementById("payments-table-body");
   tbody.innerHTML = payments.map(p => `
-    <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
-      <td class="p-3.5 font-mono font-black text-xs text-white tracking-wide">${p.number}</td>
-      <td class="p-3.5 font-mono font-bold text-xs text-[#22D3EE]">${p.invoice_number}</td>
-      <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${p.customer_name}</td>
-      <td class="p-3.5 micro-label text-[10px] text-[#A1A1AA]">${p.method.replace('_', ' ')}</td>
-      <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${p.paid_on}</td>
-      <td class="p-3.5 font-mono text-[#A1A1AA] text-xs">${p.reference || '—'}</td>
-      <td class="p-3.5 text-right font-mono font-black text-sm text-[#22C55E]">₹${p.amount}</td>
+    <tr class="hover:bg-slate-50 dark:hover:bg-[#1B2541]/50 border-b border-slate-100 dark:border-[#293449]/60 transition-colors">
+      <td class="p-3.5 font-mono font-black text-xs text-slate-900 dark:text-white tracking-wide">${p.number}</td>
+      <td class="p-3.5 font-mono font-bold text-xs text-indigo-600 dark:text-[#22D3EE]">${p.invoice_number}</td>
+      <td class="p-3.5 font-display font-bold text-slate-900 dark:text-white text-sm tracking-tight">${p.customer_name}</td>
+      <td class="p-3.5 micro-label text-[10px] text-slate-600 dark:text-[#A1A1AA]">${p.method.replace('_', ' ')}</td>
+      <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${p.paid_on}</td>
+      <td class="p-3.5 font-mono text-slate-500 dark:text-[#A1A1AA] text-xs">${p.reference || '—'}</td>
+      <td class="p-3.5 text-right font-mono font-black text-sm text-emerald-600 dark:text-[#22C55E]">₹${p.amount}</td>
       <td class="p-3.5">
-        <span class="micro-label px-2.5 py-1 rounded-full border ${p.status === 'posted' ? 'bg-emerald-500/15 text-[#22C55E] border-emerald-500/30' : 'bg-slate-700/30 text-slate-400 border-slate-600/30'}">
+        <span class="micro-label px-2.5 py-1 rounded-full border ${p.status === 'posted' ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-[#22C55E] border-emerald-300 dark:border-emerald-500/30' : 'bg-slate-100 dark:bg-slate-700/30 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-600/30'}">
           ${p.status.toUpperCase()}
         </span>
       </td>
       <td class="p-3.5 text-right">
         ${p.status === 'posted' && currentRole === 'admin' ? `
-          <button onclick="reversePayment('${p.id}')" class="text-[#EF4444] hover:text-red-300 font-display font-bold text-xs transition tracking-wide">Reverse</button>
-        ` : '<span class="text-[#A1A1AA]/50 text-xs">—</span>'}
+          <button onclick="reversePayment('${p.id}')" class="text-rose-600 dark:text-[#EF4444] hover:text-rose-800 dark:hover:text-red-300 font-display font-bold text-xs transition tracking-wide">Reverse</button>
+        ` : '<span class="text-slate-400 dark:text-[#A1A1AA]/50 text-xs">—</span>'}
       </td>
     </tr>
   `).join("");
@@ -424,17 +465,17 @@ async function loadCatalog() {
 
   const prodList = document.getElementById("catalog-products-list");
   prodList.innerHTML = currentProducts.map(p => `
-    <div class="p-4 bg-[#111A2D] rounded-xl border border-[#293449] space-y-2 hover:border-[#6366F1]/50 transition shadow-sm">
+    <div class="p-4 bg-slate-50 dark:bg-[#111A2D] rounded-xl border border-slate-200 dark:border-[#293449] space-y-2 hover:border-indigo-400 dark:hover:border-[#6366F1]/50 transition shadow-sm">
       <div class="flex items-center justify-between">
-        <span class="font-display font-bold text-white text-base tracking-tight">${p.name}</span>
-        <span class="font-mono font-black text-sm text-[#22D3EE]">₹${p.sales_price}</span>
+        <span class="font-display font-bold text-slate-900 dark:text-white text-base tracking-tight">${p.name}</span>
+        <span class="font-mono font-black text-sm text-indigo-600 dark:text-[#22D3EE]">₹${p.sales_price}</span>
       </div>
-      <div class="text-xs text-[#A1A1AA] font-medium">${p.notes || ''}</div>
+      <div class="text-xs text-slate-500 dark:text-[#A1A1AA] font-medium">${p.notes || ''}</div>
       ${p.variants.length > 0 ? `
         <div class="pt-1 flex flex-wrap gap-1.5">
           ${p.variants.map(v => `
-            <span class="text-[10px] bg-[#151D32] border border-[#293449] text-[#A1A1AA] px-2.5 py-1 rounded-md font-mono">
-              ${v.attribute_name}=<span class="text-white font-bold">${v.value}</span> <span class="text-indigo-400 font-bold">(+₹${v.extra_price})</span>
+            <span class="text-[10px] bg-white dark:bg-[#151D32] border border-slate-200 dark:border-[#293449] text-slate-700 dark:text-[#A1A1AA] px-2.5 py-1 rounded-md font-mono">
+              ${v.attribute_name}=<span class="text-slate-900 dark:text-white font-bold">${v.value}</span> <span class="text-indigo-600 dark:text-indigo-400 font-bold">(+₹${v.extra_price})</span>
             </span>
           `).join("")}
         </div>
@@ -444,15 +485,15 @@ async function loadCatalog() {
 
   const planList = document.getElementById("catalog-plans-list");
   planList.innerHTML = currentPlans.map(pl => `
-    <div class="p-4 bg-[#111A2D] rounded-xl border border-[#293449] space-y-2 hover:border-[#6366F1]/50 transition shadow-sm">
+    <div class="p-4 bg-slate-50 dark:bg-[#111A2D] rounded-xl border border-slate-200 dark:border-[#293449] space-y-2 hover:border-indigo-400 dark:hover:border-[#6366F1]/50 transition shadow-sm">
       <div class="flex items-center justify-between">
-        <span class="font-display font-bold text-white text-base tracking-tight">${pl.name}</span>
-        <span class="font-mono font-black text-sm text-[#22C55E]">₹${pl.price} <span class="text-xs text-[#A1A1AA] font-normal font-sans">/ ${pl.billing_period}</span></span>
+        <span class="font-display font-bold text-slate-900 dark:text-white text-base tracking-tight">${pl.name}</span>
+        <span class="font-mono font-black text-sm text-emerald-600 dark:text-[#22C55E]">₹${pl.price} <span class="text-xs text-slate-500 dark:text-[#A1A1AA] font-normal font-sans">/ ${pl.billing_period}</span></span>
       </div>
-      <div class="text-[11px] text-[#A1A1AA] flex flex-wrap gap-2 pt-1 font-medium">
-        <span class="bg-[#151D32] border border-[#293449] px-2.5 py-0.5 rounded-md">Pausable: <b class="${pl.pausable ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${pl.pausable ? 'Yes' : 'No'}</b></span>
-        <span class="bg-[#151D32] border border-[#293449] px-2.5 py-0.5 rounded-md">Renewable: <b class="${pl.renewable ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${pl.renewable ? 'Yes' : 'No'}</b></span>
-        <span class="bg-[#151D32] border border-[#293449] px-2.5 py-0.5 rounded-md">Closable: <b class="${pl.closable ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${pl.closable ? 'Yes' : 'No'}</b></span>
+      <div class="text-[11px] text-slate-500 dark:text-[#A1A1AA] flex flex-wrap gap-2 pt-1 font-medium">
+        <span class="bg-white dark:bg-[#151D32] border border-slate-200 dark:border-[#293449] px-2.5 py-0.5 rounded-md">Pausable: <b class="${pl.pausable ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400'}">${pl.pausable ? 'Yes' : 'No'}</b></span>
+        <span class="bg-white dark:bg-[#151D32] border border-slate-200 dark:border-[#293449] px-2.5 py-0.5 rounded-md">Renewable: <b class="${pl.renewable ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400'}">${pl.renewable ? 'Yes' : 'No'}</b></span>
+        <span class="bg-white dark:bg-[#151D32] border border-slate-200 dark:border-[#293449] px-2.5 py-0.5 rounded-md">Closable: <b class="${pl.closable ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400'}">${pl.closable ? 'Yes' : 'No'}</b></span>
       </div>
     </div>
   `).join("");
@@ -469,24 +510,24 @@ async function loadAiCopilot() {
     if (!h.health_score) return '';
 
     const riskBadge = h.churn_risk === 'Low'
-      ? `<span class="bg-emerald-500/15 text-[#22C55E] border border-emerald-500/30 px-2.5 py-1 rounded-full micro-label">Low Risk</span>`
+      ? `<span class="bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-[#22C55E] border border-emerald-300 dark:border-emerald-500/30 px-2.5 py-1 rounded-full micro-label">Low Risk</span>`
       : h.churn_risk === 'Medium'
-        ? `<span class="bg-amber-500/15 text-[#F59E0B] border border-amber-500/30 px-2.5 py-1 rounded-full micro-label">Medium Risk</span>`
-        : `<span class="bg-rose-500/15 text-[#EF4444] border border-rose-500/30 px-2.5 py-1 rounded-full micro-label">Critical Risk</span>`;
+        ? `<span class="bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-[#F59E0B] border border-amber-300 dark:border-amber-500/30 px-2.5 py-1 rounded-full micro-label">Medium Risk</span>`
+        : `<span class="bg-rose-100 dark:bg-rose-500/15 text-rose-800 dark:text-[#EF4444] border border-rose-300 dark:border-rose-500/30 px-2.5 py-1 rounded-full micro-label">Critical Risk</span>`;
 
     return `
-      <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
-        <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${c.company_name}</td>
-        <td class="p-3.5 font-display font-black text-base tracking-tight ${h.health_score >= 80 ? 'text-[#22C55E]' : (h.health_score >= 50 ? 'text-[#F59E0B]' : 'text-[#EF4444]')}">
-          ${h.health_score} <span class="text-xs font-normal text-[#A1A1AA] font-sans">/ 100</span>
+      <tr class="hover:bg-slate-50 dark:hover:bg-[#1B2541]/50 border-b border-slate-100 dark:border-[#293449]/60 transition-colors">
+        <td class="p-3.5 font-display font-bold text-slate-900 dark:text-white text-sm tracking-tight">${c.company_name}</td>
+        <td class="p-3.5 font-display font-black text-base tracking-tight ${h.health_score >= 80 ? 'text-emerald-600 dark:text-[#22C55E]' : (h.health_score >= 50 ? 'text-amber-600 dark:text-[#F59E0B]' : 'text-rose-600 dark:text-[#EF4444]')}">
+          ${h.health_score} <span class="text-xs font-normal text-slate-500 dark:text-[#A1A1AA] font-sans">/ 100</span>
         </td>
         <td class="p-3.5">${riskBadge}</td>
-        <td class="p-3.5 font-mono font-semibold ${h.max_days_overdue > 0 ? 'text-[#EF4444] font-bold' : 'text-[#A1A1AA]'}">
+        <td class="p-3.5 font-mono font-semibold ${h.max_days_overdue > 0 ? 'text-rose-600 dark:text-[#EF4444] font-bold' : 'text-slate-600 dark:text-[#A1A1AA]'}">
           ${h.max_days_overdue} days
         </td>
-        <td class="p-3.5 text-[#A1A1AA] text-xs font-medium">${h.recommendation}</td>
+        <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] text-xs font-medium">${h.recommendation}</td>
         <td class="p-3.5 text-right">
-          <button onclick="document.querySelector('[data-tab=\\'ai-copilot\\']').click()" class="bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-lg font-display font-bold text-xs transition shadow-sm tracking-wide">
+          <button onclick="document.querySelector('[data-tab=\\'ai-copilot\\']').click()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/15 dark:hover:bg-indigo-500/25 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 px-3 py-1 rounded-lg font-display font-bold text-xs transition shadow-sm tracking-wide">
             Action
           </button>
         </td>
@@ -511,20 +552,20 @@ async function loadPortal() {
 
   const subsContainer = document.getElementById("portal-subs-container");
   subsContainer.innerHTML = pSubs.map(s => `
-    <div class="bg-[#151D32] p-5 rounded-[16px] border border-[#293449] shadow-card hover:border-[#6366F1]/50 transition-all space-y-3">
+    <div class="bg-white dark:bg-[#151D32] p-5 rounded-[16px] border border-slate-200 dark:border-[#293449] shadow-sm dark:shadow-card hover:border-indigo-400 dark:hover:border-[#6366F1]/50 transition-all space-y-3">
       <div class="flex items-center justify-between">
-        <span class="font-mono font-black text-xs text-[#22D3EE] tracking-wide">${s.number}</span>
+        <span class="font-mono font-black text-xs text-indigo-600 dark:text-[#22D3EE] tracking-wide">${s.number}</span>
         ${getStatusBadge(s.status, s.is_paused)}
       </div>
       <div>
-        <div class="text-base font-display font-bold text-white tracking-tight">${s.plan_name}</div>
-        <div class="text-xs text-[#A1A1AA] mt-0.5">Contract End: <span class="font-mono text-white font-semibold">${s.expiry_date}</span></div>
+        <div class="text-base font-display font-bold text-slate-900 dark:text-white tracking-tight">${s.plan_name}</div>
+        <div class="text-xs text-slate-500 dark:text-[#A1A1AA] mt-0.5">Contract End: <span class="font-mono text-slate-800 dark:text-white font-semibold">${s.expiry_date}</span></div>
       </div>
-      <div class="pt-3 border-t border-[#293449] flex items-center justify-between">
-        <span class="font-mono font-black text-lg text-white">₹${s.total}</span>
+      <div class="pt-3 border-t border-slate-100 dark:border-[#293449] flex items-center justify-between">
+        <span class="font-mono font-black text-lg text-slate-900 dark:text-white">₹${s.total}</span>
         <div class="space-x-1.5">
           ${s.allowed_actions.map(act => `
-            <button onclick="portalAction('${acme.id}', '${s.id}', '${act}')" class="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-lg font-display font-bold text-xs transition tracking-wide">
+            <button onclick="portalAction('${acme.id}', '${s.id}', '${act}')" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 px-3 py-1 rounded-lg font-display font-bold text-xs transition tracking-wide">
               ${act}
             </button>
           `).join("")}
@@ -535,15 +576,15 @@ async function loadPortal() {
 
   const invsBody = document.getElementById("portal-invoices-body");
   invsBody.innerHTML = pInvs.map(i => `
-    <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
-      <td class="p-3.5 font-mono font-black text-xs text-[#22D3EE] tracking-wide">${i.number}</td>
-      <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${i.invoice_date}</td>
-      <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${i.due_date}</td>
-      <td class="p-3.5 text-right font-mono font-black text-sm text-white">₹${i.total}</td>
-      <td class="p-3.5 text-right font-mono font-bold text-xs text-[#22C55E]">₹${i.amount_paid}</td>
+    <tr class="hover:bg-slate-50 dark:hover:bg-[#1B2541]/50 border-b border-slate-100 dark:border-[#293449]/60 transition-colors">
+      <td class="p-3.5 font-mono font-black text-xs text-indigo-600 dark:text-[#22D3EE] tracking-wide">${i.number}</td>
+      <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${i.invoice_date}</td>
+      <td class="p-3.5 text-slate-600 dark:text-[#A1A1AA] font-mono text-xs font-semibold">${i.due_date}</td>
+      <td class="p-3.5 text-right font-mono font-black text-sm text-slate-900 dark:text-white">₹${i.total}</td>
+      <td class="p-3.5 text-right font-mono font-bold text-xs text-emerald-600 dark:text-[#22C55E]">₹${i.amount_paid}</td>
       <td class="p-3.5">${getInvoiceStatusChip(i.status, i.is_overdue)}</td>
       <td class="p-3.5 text-right">
-        <button onclick="openInvoiceModal('${i.id}')" class="bg-[#111A2D] hover:bg-[#1B2541] border border-[#293449] hover:border-[#6366F1] px-3 py-1.5 rounded-lg font-display font-bold text-xs text-[#A1A1AA] hover:text-[#F8FAFC] transition tracking-wide">
+        <button onclick="openInvoiceModal('${i.id}')" class="bg-slate-100 hover:bg-slate-200 dark:bg-[#111A2D] dark:hover:bg-[#1B2541] border border-slate-200 dark:border-[#293449] hover:border-indigo-400 dark:hover:border-[#6366F1] px-3 py-1.5 rounded-lg font-display font-bold text-xs text-slate-700 hover:text-slate-900 dark:text-[#A1A1AA] dark:hover:text-[#F8FAFC] transition tracking-wide">
           View Receipt
         </button>
       </td>
@@ -581,26 +622,26 @@ function openInvoiceModal(invoiceId) {
 
   const content = document.getElementById("invoice-modal-content");
   content.innerHTML = `
-    <div class="flex justify-between items-start border-b border-[#293449] pb-4">
+    <div class="flex justify-between items-start border-b border-slate-200 dark:border-[#293449] pb-4">
       <div>
-        <div class="micro-label text-[#A1A1AA]">Billed To</div>
-        <div class="text-xl font-black font-display tracking-tight text-white mt-1">${inv.customer_snapshot.company_name || inv.customer_name}</div>
-        <div class="text-[#A1A1AA] text-xs mt-0.5">${inv.customer_snapshot.contact_name || ''}</div>
-        <div class="text-[#A1A1AA] text-xs">${inv.customer_snapshot.address || ''}</div>
-        <div class="text-[#A1A1AA] text-xs mt-1 font-medium">GSTIN: <span class="font-mono text-[#22D3EE] font-bold">${inv.customer_snapshot.tax_id || 'N/A'}</span></div>
+        <div class="micro-label text-slate-500 dark:text-[#A1A1AA]">Billed To</div>
+        <div class="text-xl font-black font-display tracking-tight text-slate-900 dark:text-white mt-1">${inv.customer_snapshot.company_name || inv.customer_name}</div>
+        <div class="text-slate-500 dark:text-[#A1A1AA] text-xs mt-0.5">${inv.customer_snapshot.contact_name || ''}</div>
+        <div class="text-slate-500 dark:text-[#A1A1AA] text-xs">${inv.customer_snapshot.address || ''}</div>
+        <div class="text-slate-500 dark:text-[#A1A1AA] text-xs mt-1 font-medium">GSTIN: <span class="font-mono text-indigo-600 dark:text-[#22D3EE] font-bold">${inv.customer_snapshot.tax_id || 'N/A'}</span></div>
       </div>
       <div class="text-right">
         <div class="font-mono text-xl font-black text-[#6366F1] tracking-tight">${inv.number}</div>
-        <div class="text-xs text-[#A1A1AA] mt-1">Date: <b class="text-white font-mono">${inv.invoice_date}</b></div>
-        <div class="text-xs text-[#A1A1AA]">Due Date: <b class="text-white font-mono">${inv.due_date}</b></div>
+        <div class="text-xs text-slate-500 dark:text-[#A1A1AA] mt-1">Date: <b class="text-slate-900 dark:text-white font-mono">${inv.invoice_date}</b></div>
+        <div class="text-xs text-slate-500 dark:text-[#A1A1AA]">Due Date: <b class="text-slate-900 dark:text-white font-mono">${inv.due_date}</b></div>
         <div class="mt-2.5">${getInvoiceStatusChip(inv.status, inv.is_overdue)}</div>
       </div>
     </div>
 
     <!-- Lines Table -->
-    <div class="overflow-x-auto rounded-xl border border-[#293449]">
+    <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#293449]">
       <table class="w-full text-left text-xs">
-        <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
+        <thead class="bg-slate-50 dark:bg-[#111A2D] text-slate-500 dark:text-[#A1A1AA] border-b border-slate-200 dark:border-[#293449]">
           <tr>
             <th class="p-2.5 micro-label">Item Description</th>
             <th class="p-2.5 micro-label text-center">Qty</th>
@@ -610,15 +651,15 @@ function openInvoiceModal(invoiceId) {
             <th class="p-2.5 micro-label text-right">Amount</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-[#293449]/60 bg-[#151D32]">
+        <tbody class="divide-y divide-slate-100 dark:divide-[#293449]/60 bg-white dark:bg-[#151D32]">
           ${inv.lines.map(l => `
-            <tr class="hover:bg-[#1B2541]/40 transition">
-              <td class="p-2.5 font-semibold text-white">${l.description}</td>
-              <td class="p-2.5 text-center text-[#A1A1AA] font-mono font-bold">${l.quantity}</td>
-              <td class="p-2.5 text-right font-mono text-[#A1A1AA]">₹${l.unit_price}</td>
-              <td class="p-2.5 text-right font-mono text-[#22C55E] font-bold">₹${l.discount_amount}</td>
-              <td class="p-2.5 text-right font-mono text-[#A1A1AA]">₹${l.tax_amount}</td>
-              <td class="p-2.5 text-right font-mono font-black text-white">₹${l.line_total}</td>
+            <tr class="hover:bg-slate-50 dark:hover:bg-[#1B2541]/40 transition">
+              <td class="p-2.5 font-semibold text-slate-900 dark:text-white">${l.description}</td>
+              <td class="p-2.5 text-center text-slate-600 dark:text-[#A1A1AA] font-mono font-bold">${l.quantity}</td>
+              <td class="p-2.5 text-right font-mono text-slate-600 dark:text-[#A1A1AA]">₹${l.unit_price}</td>
+              <td class="p-2.5 text-right font-mono text-emerald-600 dark:text-[#22C55E] font-bold">₹${l.discount_amount}</td>
+              <td class="p-2.5 text-right font-mono text-slate-600 dark:text-[#A1A1AA]">₹${l.tax_amount}</td>
+              <td class="p-2.5 text-right font-mono font-black text-slate-900 dark:text-white">₹${l.line_total}</td>
             </tr>
           `).join("")}
         </tbody>
@@ -627,13 +668,13 @@ function openInvoiceModal(invoiceId) {
 
     <!-- Totals Summary -->
     <div class="flex justify-end pt-2">
-      <div class="w-72 space-y-1.5 text-right bg-[#111A2D] p-4 rounded-xl border border-[#293449] text-xs">
-        <div class="flex justify-between text-[#A1A1AA] font-medium"><span>Untaxed Base:</span> <span class="font-mono text-white font-bold">₹${inv.untaxed_total}</span></div>
-        <div class="flex justify-between text-[#22C55E] font-bold"><span>Discount Savings:</span> <span class="font-mono">-₹${inv.discount_total}</span></div>
-        <div class="flex justify-between text-[#A1A1AA] font-medium"><span>GST Taxes:</span> <span class="font-mono text-white font-bold">₹${inv.tax_total}</span></div>
-        <div class="flex justify-between font-black text-sm border-t border-[#293449] pt-2 mt-1"><span class="font-display font-bold text-white">Total Invoice:</span> <span class="font-mono text-[#22D3EE] font-black text-base">₹${inv.total}</span></div>
-        <div class="flex justify-between text-[#22C55E] font-bold"><span>Amount Paid:</span> <span class="font-mono">₹${inv.amount_paid}</span></div>
-        <div class="flex justify-between text-[#EF4444] font-black border-t border-[#293449]/60 pt-1.5"><span>Balance Due:</span> <span class="font-mono">₹${inv.amount_due}</span></div>
+      <div class="w-72 space-y-1.5 text-right bg-slate-50 dark:bg-[#111A2D] p-4 rounded-xl border border-slate-200 dark:border-[#293449] text-xs">
+        <div class="flex justify-between text-slate-600 dark:text-[#A1A1AA] font-medium"><span>Untaxed Base:</span> <span class="font-mono text-slate-900 dark:text-white font-bold">₹${inv.untaxed_total}</span></div>
+        <div class="flex justify-between text-emerald-600 dark:text-[#22C55E] font-bold"><span>Discount Savings:</span> <span class="font-mono">-₹${inv.discount_total}</span></div>
+        <div class="flex justify-between text-slate-600 dark:text-[#A1A1AA] font-medium"><span>GST Taxes:</span> <span class="font-mono text-slate-900 dark:text-white font-bold">₹${inv.tax_total}</span></div>
+        <div class="flex justify-between font-black text-sm border-t border-slate-200 dark:border-[#293449] pt-2 mt-1"><span class="font-display font-bold text-slate-900 dark:text-white">Total Invoice:</span> <span class="font-mono text-indigo-600 dark:text-[#22D3EE] font-black text-base">₹${inv.total}</span></div>
+        <div class="flex justify-between text-emerald-600 dark:text-[#22C55E] font-bold"><span>Amount Paid:</span> <span class="font-mono">₹${inv.amount_paid}</span></div>
+        <div class="flex justify-between text-rose-600 dark:text-[#EF4444] font-black border-t border-slate-200 dark:border-[#293449]/60 pt-1.5"><span>Balance Due:</span> <span class="font-mono">₹${inv.amount_due}</span></div>
       </div>
     </div>
   `;
@@ -644,28 +685,28 @@ function openInvoiceModal(invoiceId) {
 
 function getStatusBadge(status, isPaused) {
   if (isPaused) {
-    return `<span class="bg-purple-500/15 text-purple-300 border border-purple-500/30 micro-label px-2.5 py-1 rounded-full">PAUSED</span>`;
+    return `<span class="bg-purple-100 dark:bg-purple-500/15 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 micro-label px-2.5 py-1 rounded-full">PAUSED</span>`;
   }
   const map = {
-    draft: "bg-slate-500/15 text-slate-300 border-slate-500/30",
-    quotation: "bg-cyan-500/15 text-[#22D3EE] border-cyan-500/30",
-    confirmed: "bg-amber-500/15 text-[#F59E0B] border-amber-500/30",
-    active: "bg-emerald-500/15 text-[#22C55E] border-emerald-500/30",
-    closed: "bg-zinc-500/15 text-[#A1A1AA] border-zinc-500/30"
+    draft: "bg-slate-100 dark:bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-500/30",
+    quotation: "bg-sky-100 dark:bg-cyan-500/15 text-sky-800 dark:text-[#22D3EE] border-sky-200 dark:border-cyan-500/30",
+    confirmed: "bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-[#F59E0B] border-amber-200 dark:border-amber-500/30",
+    active: "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-[#22C55E] border-emerald-200 dark:border-emerald-500/30",
+    closed: "bg-zinc-100 dark:bg-zinc-500/15 text-zinc-700 dark:text-[#A1A1AA] border-zinc-200 dark:border-zinc-500/30"
   };
-  const cls = map[status] || 'bg-slate-500/15 text-slate-300 border-slate-500/30';
+  const cls = map[status] || 'bg-slate-100 dark:bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-500/30';
   return `<span class="${cls} border micro-label px-2.5 py-1 rounded-full">${status}</span>`;
 }
 
 function getInvoiceStatusChip(status, isOverdue) {
   if (status === "paid") {
-    return `<span class="bg-emerald-500/15 text-[#22C55E] border border-emerald-500/30 micro-label px-2.5 py-1 rounded-full">PAID</span>`;
+    return `<span class="bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-[#22C55E] border border-emerald-200 dark:border-emerald-500/30 micro-label px-2.5 py-1 rounded-full">PAID</span>`;
   }
   if (isOverdue) {
-    return `<span class="bg-rose-500/15 text-[#EF4444] border border-rose-500/30 micro-label px-2.5 py-1 rounded-full">OVERDUE</span>`;
+    return `<span class="bg-rose-100 dark:bg-rose-500/15 text-rose-800 dark:text-[#EF4444] border border-rose-200 dark:border-rose-500/30 micro-label px-2.5 py-1 rounded-full">OVERDUE</span>`;
   }
   if (status === "confirmed") {
-    return `<span class="bg-amber-500/15 text-[#F59E0B] border border-amber-500/30 micro-label px-2.5 py-1 rounded-full">PENDING</span>`;
+    return `<span class="bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-[#F59E0B] border border-amber-200 dark:border-amber-500/30 micro-label px-2.5 py-1 rounded-full">PENDING</span>`;
   }
-  return `<span class="bg-slate-500/15 text-slate-300 border border-slate-500/30 micro-label px-2.5 py-1 rounded-full">${status}</span>`;
+  return `<span class="bg-slate-100 dark:bg-slate-500/15 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-500/30 micro-label px-2.5 py-1 rounded-full">${status}</span>`;
 }
