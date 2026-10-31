@@ -1,4 +1,4 @@
-// Brightloop Software Application Client
+// Brightloop Software Application Client - Premium Midnight Indigo Edition with Dramatic Typography
 let currentRole = "admin";
 let cashflowChart = null;
 let currentSubscriptions = [];
@@ -8,6 +8,14 @@ let currentProducts = [];
 let currentPlans = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Global Chart.js dark theme defaults with dramatic typography
+  if (window.Chart) {
+    Chart.defaults.color = '#A1A1AA';
+    Chart.defaults.borderColor = 'rgba(41, 52, 73, 0.6)';
+    Chart.defaults.font.family = "'Outfit', 'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.font.weight = 600;
+  }
+
   lucide.createIcons();
   setupNavigation();
   setupTimeTravel();
@@ -20,11 +28,11 @@ function setupNavigation() {
   document.querySelectorAll(".nav-tab").forEach(tab => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".nav-tab").forEach(t => {
-        t.classList.remove("active", "border-indigo-600", "text-indigo-600");
-        t.classList.add("border-transparent", "text-slate-600");
+        t.classList.remove("active", "border-[#6366F1]", "text-[#6366F1]", "border-indigo-600", "text-indigo-600");
+        t.classList.add("border-transparent", "text-[#A1A1AA]");
       });
-      tab.classList.add("active", "border-indigo-600", "text-indigo-600");
-      tab.classList.remove("border-transparent", "text-slate-600");
+      tab.classList.add("active", "border-[#6366F1]", "text-[#6366F1]");
+      tab.classList.remove("border-transparent", "text-[#A1A1AA]");
 
       const target = tab.dataset.tab;
       document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.add("hidden"));
@@ -104,6 +112,7 @@ function setupModals() {
         throw new Error(err.message || "Payment rejected");
       }
       document.getElementById("modal-record-payment").classList.add("hidden");
+      document.getElementById("modal-record-payment").classList.remove("flex");
       alert("✅ Payment recorded successfully! Invoice status and aging updated.");
       refreshAll();
     } catch (err) {
@@ -183,16 +192,16 @@ async function loadDashboard() {
   const topList = document.getElementById("top-overdue-list");
   if (d.top_overdue_customers && d.top_overdue_customers.length > 0) {
     topList.innerHTML = d.top_overdue_customers.map(c => `
-      <div class="flex items-center justify-between p-2 rounded bg-slate-50 border border-slate-100">
+      <div class="flex items-center justify-between p-3.5 rounded-xl bg-[#111A2D] border border-[#293449] hover:border-[#6366F1]/50 transition shadow-sm">
         <div>
-          <div class="font-bold text-slate-800">${c.name}</div>
-          <div class="text-[10px] text-rose-600 font-semibold">${c.count} unpaid invoice(s)</div>
+          <div class="font-display font-bold text-white text-sm tracking-tight">${c.name}</div>
+          <div class="micro-label text-[9.5px] text-[#EF4444] font-extrabold mt-0.5">${c.count} unpaid invoice(s)</div>
         </div>
-        <div class="font-mono font-bold text-rose-600">₹${c.amount}</div>
+        <div class="font-mono font-black text-sm text-[#EF4444]">₹${c.amount}</div>
       </div>
     `).join("");
   } else {
-    topList.innerHTML = `<div class="text-slate-400 italic">No overdue accounts detected!</div>`;
+    topList.innerHTML = `<div class="text-[#A1A1AA] text-xs italic py-2">No overdue accounts detected!</div>`;
   }
 
   // Render Cashflow Chart
@@ -211,14 +220,16 @@ function renderChart(invoiced, collected) {
         {
           label: "Invoiced Revenue (Accrual)",
           data: [invoiced * 0.7, invoiced * 0.85, invoiced],
-          backgroundColor: "#6366f1",
-          borderRadius: 6
+          backgroundColor: "#6366F1",
+          hoverBackgroundColor: "#4F46E5",
+          borderRadius: 8
         },
         {
           label: "Cash Collected",
           data: [collected * 0.8, collected * 0.9, collected],
-          backgroundColor: "#10b981",
-          borderRadius: 6
+          backgroundColor: "#22D3EE",
+          hoverBackgroundColor: "#06B6D4",
+          borderRadius: 8
         }
       ]
     },
@@ -226,12 +237,45 @@ function renderChart(invoiced, collected) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "top" }
+        legend: {
+          position: "top",
+          labels: {
+            color: "#F8FAFC",
+            font: { family: "'Outfit', 'Plus Jakarta Sans', sans-serif", size: 12, weight: 700 },
+            boxWidth: 14,
+            padding: 16
+          }
+        },
+        tooltip: {
+          backgroundColor: "#111A2D",
+          titleColor: "#F8FAFC",
+          bodyColor: "#F8FAFC",
+          borderColor: "#293449",
+          borderWidth: 1,
+          padding: 12,
+          cornerRadius: 10,
+          titleFont: { family: "'Outfit', sans-serif", size: 13, weight: 'bold' },
+          bodyFont: { family: "'JetBrains Mono', monospace", size: 12 }
+        }
       },
       scales: {
+        x: {
+          ticks: {
+            color: "#A1A1AA",
+            font: { family: "'Outfit', sans-serif", size: 12, weight: 600 }
+          },
+          grid: {
+            color: "rgba(41, 52, 73, 0.4)"
+          }
+        },
         y: {
           ticks: {
-            callback: (v) => "₹" + v
+            color: "#A1A1AA",
+            font: { family: "'JetBrains Mono', monospace", size: 11, weight: 600 },
+            callback: (v) => "₹" + Number(v).toLocaleString()
+          },
+          grid: {
+            color: "rgba(41, 52, 73, 0.4)"
           }
         }
       }
@@ -247,22 +291,22 @@ async function loadSubscriptions() {
   tbody.innerHTML = currentSubscriptions.map(s => {
     const statusBadge = getStatusBadge(s.status, s.is_paused);
     const actionBtns = s.allowed_actions.map(act => `
-      <button onclick="triggerSubAction('${s.id}', '${act}')" class="px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-slate-100 hover:bg-slate-200 text-slate-700 ml-1">
+      <button onclick="triggerSubAction('${s.id}', '${act}')" class="px-2.5 py-1 rounded-lg micro-label text-[10px] font-extrabold bg-[#111A2D] hover:bg-[#1B2541] text-[#A1A1AA] hover:text-[#F8FAFC] border border-[#293449] hover:border-[#6366F1] transition shadow-sm ml-1 tracking-wider">
         ${act.replace('_', ' ')}
       </button>
     `).join("");
 
     return `
-      <tr class="hover:bg-slate-50">
-        <td class="p-3 font-mono font-bold text-indigo-600">${s.number}</td>
-        <td class="p-3 font-semibold text-slate-800">${s.customer_name}</td>
-        <td class="p-3">${s.plan_name}</td>
-        <td class="p-3">${statusBadge}</td>
-        <td class="p-3 text-slate-600">${s.start_date}</td>
-        <td class="p-3 text-slate-600">${s.expiry_date}</td>
-        <td class="p-3 text-indigo-700 font-semibold">${s.next_billing_date || '—'}</td>
-        <td class="p-3 text-right font-mono font-bold">₹${s.total}</td>
-        <td class="p-3 text-right">${actionBtns || '<span class="text-slate-400">None</span>'}</td>
+      <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
+        <td class="p-3.5 font-mono font-black text-xs text-[#22D3EE] tracking-wide">${s.number}</td>
+        <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${s.customer_name}</td>
+        <td class="p-3.5 text-[#A1A1AA] font-medium">${s.plan_name}</td>
+        <td class="p-3.5">${statusBadge}</td>
+        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${s.start_date}</td>
+        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${s.expiry_date}</td>
+        <td class="p-3.5 text-indigo-400 font-bold font-mono text-xs">${s.next_billing_date || '—'}</td>
+        <td class="p-3.5 text-right font-mono font-black text-sm text-white">₹${s.total}</td>
+        <td class="p-3.5 text-right whitespace-nowrap">${actionBtns || '<span class="text-[#A1A1AA]/50 text-xs">—</span>'}</td>
       </tr>
     `;
   }).join("");
@@ -303,25 +347,25 @@ async function loadInvoices() {
     const canPay = inv.status === "confirmed" && parseFloat(inv.amount_due) > 0;
 
     return `
-      <tr class="hover:bg-slate-50">
-        <td class="p-3 font-mono font-bold text-indigo-600 cursor-pointer hover:underline" onclick="openInvoiceModal('${inv.id}')">${inv.number}</td>
-        <td class="p-3 font-semibold text-slate-800">${inv.customer_name}</td>
-        <td class="p-3 text-slate-600">${inv.invoice_date}</td>
-        <td class="p-3 text-slate-600">${inv.due_date}</td>
-        <td class="p-3 text-right font-mono">₹${inv.untaxed_total}</td>
-        <td class="p-3 text-right font-mono text-emerald-600">₹${inv.discount_total}</td>
-        <td class="p-3 text-right font-mono">₹${inv.tax_total}</td>
-        <td class="p-3 text-right font-mono font-bold">₹${inv.total}</td>
-        <td class="p-3 text-right font-mono text-emerald-700">₹${inv.amount_paid}</td>
-        <td class="p-3 text-right font-mono font-bold ${parseFloat(inv.amount_due) > 0 ? 'text-rose-600' : 'text-slate-400'}">₹${inv.amount_due}</td>
-        <td class="p-3">${statusChip}</td>
-        <td class="p-3 text-right">
+      <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
+        <td class="p-3.5 font-mono font-black text-xs text-[#22D3EE] hover:text-cyan-300 cursor-pointer transition underline-offset-2 hover:underline tracking-wide" onclick="openInvoiceModal('${inv.id}')">${inv.number}</td>
+        <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${inv.customer_name}</td>
+        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${inv.invoice_date}</td>
+        <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${inv.due_date}</td>
+        <td class="p-3.5 text-right font-mono text-xs text-[#A1A1AA]">₹${inv.untaxed_total}</td>
+        <td class="p-3.5 text-right font-mono text-xs text-[#22C55E] font-bold">₹${inv.discount_total}</td>
+        <td class="p-3.5 text-right font-mono text-xs text-[#A1A1AA]">₹${inv.tax_total}</td>
+        <td class="p-3.5 text-right font-mono font-black text-sm text-white">₹${inv.total}</td>
+        <td class="p-3.5 text-right font-mono font-bold text-xs text-[#22C55E]">₹${inv.amount_paid}</td>
+        <td class="p-3.5 text-right font-mono font-black text-sm ${parseFloat(inv.amount_due) > 0 ? 'text-[#EF4444]' : 'text-[#A1A1AA]'}">₹${inv.amount_due}</td>
+        <td class="p-3.5">${statusChip}</td>
+        <td class="p-3.5 text-right whitespace-nowrap">
           ${canPay ? `
-            <button onclick="openPaymentModal('${inv.id}', '${inv.number}', '${inv.amount_due}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded text-[11px] font-semibold">
+            <button onclick="openPaymentModal('${inv.id}', '${inv.number}', '${inv.amount_due}')" class="bg-[#6366F1] hover:bg-[#4F46E5] text-white px-3 py-1.5 rounded-lg font-display font-bold text-xs shadow-sm hover:shadow-glow-indigo transition tracking-wide">
               Pay
             </button>
           ` : ''}
-          <button onclick="openInvoiceModal('${inv.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded text-[11px] font-semibold ml-1">
+          <button onclick="openInvoiceModal('${inv.id}')" class="bg-[#111A2D] hover:bg-[#1B2541] text-[#A1A1AA] hover:text-[#F8FAFC] border border-[#293449] hover:border-[#6366F1] px-2.5 py-1.5 rounded-lg font-display font-bold text-xs transition ml-1 tracking-wide">
             Receipt
           </button>
         </td>
@@ -336,19 +380,23 @@ async function loadPayments() {
 
   const tbody = document.getElementById("payments-table-body");
   tbody.innerHTML = payments.map(p => `
-    <tr class="hover:bg-slate-50">
-      <td class="p-3 font-mono font-bold text-slate-800">${p.number}</td>
-      <td class="p-3 font-mono text-indigo-600 font-semibold">${p.invoice_number}</td>
-      <td class="p-3 font-semibold text-slate-800">${p.customer_name}</td>
-      <td class="p-3 uppercase text-[11px] font-bold text-slate-600">${p.method.replace('_', ' ')}</td>
-      <td class="p-3 text-slate-600">${p.paid_on}</td>
-      <td class="p-3 font-mono text-slate-500">${p.reference || '—'}</td>
-      <td class="p-3 text-right font-mono font-bold text-emerald-600">₹${p.amount}</td>
-      <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${p.status === 'posted' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'}">${p.status.toUpperCase()}</span></td>
-      <td class="p-3 text-right">
+    <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
+      <td class="p-3.5 font-mono font-black text-xs text-white tracking-wide">${p.number}</td>
+      <td class="p-3.5 font-mono font-bold text-xs text-[#22D3EE]">${p.invoice_number}</td>
+      <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${p.customer_name}</td>
+      <td class="p-3.5 micro-label text-[10px] text-[#A1A1AA]">${p.method.replace('_', ' ')}</td>
+      <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${p.paid_on}</td>
+      <td class="p-3.5 font-mono text-[#A1A1AA] text-xs">${p.reference || '—'}</td>
+      <td class="p-3.5 text-right font-mono font-black text-sm text-[#22C55E]">₹${p.amount}</td>
+      <td class="p-3.5">
+        <span class="micro-label px-2.5 py-1 rounded-full border ${p.status === 'posted' ? 'bg-emerald-500/15 text-[#22C55E] border-emerald-500/30' : 'bg-slate-700/30 text-slate-400 border-slate-600/30'}">
+          ${p.status.toUpperCase()}
+        </span>
+      </td>
+      <td class="p-3.5 text-right">
         ${p.status === 'posted' && currentRole === 'admin' ? `
-          <button onclick="reversePayment('${p.id}')" class="text-rose-600 hover:text-rose-800 font-semibold text-[11px]">Reverse</button>
-        ` : '—'}
+          <button onclick="reversePayment('${p.id}')" class="text-[#EF4444] hover:text-red-300 font-display font-bold text-xs transition tracking-wide">Reverse</button>
+        ` : '<span class="text-[#A1A1AA]/50 text-xs">—</span>'}
       </td>
     </tr>
   `).join("");
@@ -376,17 +424,17 @@ async function loadCatalog() {
 
   const prodList = document.getElementById("catalog-products-list");
   prodList.innerHTML = currentProducts.map(p => `
-    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+    <div class="p-4 bg-[#111A2D] rounded-xl border border-[#293449] space-y-2 hover:border-[#6366F1]/50 transition shadow-sm">
       <div class="flex items-center justify-between">
-        <span class="font-bold text-slate-900">${p.name}</span>
-        <span class="font-mono font-bold text-indigo-700">₹${p.sales_price}</span>
+        <span class="font-display font-bold text-white text-base tracking-tight">${p.name}</span>
+        <span class="font-mono font-black text-sm text-[#22D3EE]">₹${p.sales_price}</span>
       </div>
-      <div class="text-xs text-slate-500">${p.notes || ''}</div>
+      <div class="text-xs text-[#A1A1AA] font-medium">${p.notes || ''}</div>
       ${p.variants.length > 0 ? `
-        <div class="pt-1 flex flex-wrap gap-1">
+        <div class="pt-1 flex flex-wrap gap-1.5">
           ${p.variants.map(v => `
-            <span class="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded font-mono">
-              ${v.attribute_name}=${v.value} (+₹${v.extra_price})
+            <span class="text-[10px] bg-[#151D32] border border-[#293449] text-[#A1A1AA] px-2.5 py-1 rounded-md font-mono">
+              ${v.attribute_name}=<span class="text-white font-bold">${v.value}</span> <span class="text-indigo-400 font-bold">(+₹${v.extra_price})</span>
             </span>
           `).join("")}
         </div>
@@ -396,17 +444,15 @@ async function loadCatalog() {
 
   const planList = document.getElementById("catalog-plans-list");
   planList.innerHTML = currentPlans.map(pl => `
-    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+    <div class="p-4 bg-[#111A2D] rounded-xl border border-[#293449] space-y-2 hover:border-[#6366F1]/50 transition shadow-sm">
       <div class="flex items-center justify-between">
-        <span class="font-bold text-slate-900">${pl.name}</span>
-        <span class="font-mono font-bold text-emerald-700">₹${pl.price} / ${pl.billing_period}</span>
+        <span class="font-display font-bold text-white text-base tracking-tight">${pl.name}</span>
+        <span class="font-mono font-black text-sm text-[#22C55E]">₹${pl.price} <span class="text-xs text-[#A1A1AA] font-normal font-sans">/ ${pl.billing_period}</span></span>
       </div>
-      <div class="text-[11px] text-slate-500 flex flex-wrap gap-2 pt-1">
-        <span>Pausable: <b>${pl.pausable ? 'Yes' : 'No'}</b></span>
-        <span>•</span>
-        <span>Renewable: <b>${pl.renewable ? 'Yes' : 'No'}</b></span>
-        <span>•</span>
-        <span>Closable: <b>${pl.closable ? 'Yes' : 'No'}</b></span>
+      <div class="text-[11px] text-[#A1A1AA] flex flex-wrap gap-2 pt-1 font-medium">
+        <span class="bg-[#151D32] border border-[#293449] px-2.5 py-0.5 rounded-md">Pausable: <b class="${pl.pausable ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${pl.pausable ? 'Yes' : 'No'}</b></span>
+        <span class="bg-[#151D32] border border-[#293449] px-2.5 py-0.5 rounded-md">Renewable: <b class="${pl.renewable ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${pl.renewable ? 'Yes' : 'No'}</b></span>
+        <span class="bg-[#151D32] border border-[#293449] px-2.5 py-0.5 rounded-md">Closable: <b class="${pl.closable ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${pl.closable ? 'Yes' : 'No'}</b></span>
       </div>
     </div>
   `).join("");
@@ -423,24 +469,24 @@ async function loadAiCopilot() {
     if (!h.health_score) return '';
 
     const riskBadge = h.churn_risk === 'Low'
-      ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">Low Risk</span>`
+      ? `<span class="bg-emerald-500/15 text-[#22C55E] border border-emerald-500/30 px-2.5 py-1 rounded-full micro-label">Low Risk</span>`
       : h.churn_risk === 'Medium'
-        ? `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Medium Risk</span>`
-        : `<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Critical Risk</span>`;
+        ? `<span class="bg-amber-500/15 text-[#F59E0B] border border-amber-500/30 px-2.5 py-1 rounded-full micro-label">Medium Risk</span>`
+        : `<span class="bg-rose-500/15 text-[#EF4444] border border-rose-500/30 px-2.5 py-1 rounded-full micro-label">Critical Risk</span>`;
 
     return `
-      <tr>
-        <td class="p-3 font-semibold text-slate-900">${c.company_name}</td>
-        <td class="p-3 font-mono font-bold text-sm ${h.health_score >= 80 ? 'text-emerald-600' : (h.health_score >= 50 ? 'text-amber-600' : 'text-rose-600')}">
-          ${h.health_score} / 100
+      <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
+        <td class="p-3.5 font-display font-bold text-white text-sm tracking-tight">${c.company_name}</td>
+        <td class="p-3.5 font-display font-black text-base tracking-tight ${h.health_score >= 80 ? 'text-[#22C55E]' : (h.health_score >= 50 ? 'text-[#F59E0B]' : 'text-[#EF4444]')}">
+          ${h.health_score} <span class="text-xs font-normal text-[#A1A1AA] font-sans">/ 100</span>
         </td>
-        <td class="p-3">${riskBadge}</td>
-        <td class="p-3 font-mono ${h.max_days_overdue > 0 ? 'text-rose-600 font-bold' : 'text-slate-500'}">
+        <td class="p-3.5">${riskBadge}</td>
+        <td class="p-3.5 font-mono font-semibold ${h.max_days_overdue > 0 ? 'text-[#EF4444] font-bold' : 'text-[#A1A1AA]'}">
           ${h.max_days_overdue} days
         </td>
-        <td class="p-3 text-slate-600 text-[11px]">${h.recommendation}</td>
-        <td class="p-3 text-right">
-          <button onclick="document.querySelector('[data-tab=\\'ai-copilot\\']').click()" class="bg-purple-100 text-purple-700 hover:bg-purple-200 px-2 py-1 rounded font-semibold text-[11px]">
+        <td class="p-3.5 text-[#A1A1AA] text-xs font-medium">${h.recommendation}</td>
+        <td class="p-3.5 text-right">
+          <button onclick="document.querySelector('[data-tab=\\'ai-copilot\\']').click()" class="bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-lg font-display font-bold text-xs transition shadow-sm tracking-wide">
             Action
           </button>
         </td>
@@ -465,20 +511,20 @@ async function loadPortal() {
 
   const subsContainer = document.getElementById("portal-subs-container");
   subsContainer.innerHTML = pSubs.map(s => `
-    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+    <div class="bg-[#151D32] p-5 rounded-[16px] border border-[#293449] shadow-card hover:border-[#6366F1]/50 transition-all space-y-3">
       <div class="flex items-center justify-between">
-        <span class="font-mono font-bold text-indigo-600">${s.number}</span>
+        <span class="font-mono font-black text-xs text-[#22D3EE] tracking-wide">${s.number}</span>
         ${getStatusBadge(s.status, s.is_paused)}
       </div>
       <div>
-        <div class="text-base font-bold text-slate-900">${s.plan_name}</div>
-        <div class="text-xs text-slate-500">Contract End: ${s.expiry_date}</div>
+        <div class="text-base font-display font-bold text-white tracking-tight">${s.plan_name}</div>
+        <div class="text-xs text-[#A1A1AA] mt-0.5">Contract End: <span class="font-mono text-white font-semibold">${s.expiry_date}</span></div>
       </div>
-      <div class="pt-2 border-t flex items-center justify-between">
-        <span class="font-mono font-black text-slate-900">₹${s.total}</span>
-        <div class="space-x-1">
+      <div class="pt-3 border-t border-[#293449] flex items-center justify-between">
+        <span class="font-mono font-black text-lg text-white">₹${s.total}</span>
+        <div class="space-x-1.5">
           ${s.allowed_actions.map(act => `
-            <button onclick="portalAction('${acme.id}', '${s.id}', '${act}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded text-xs font-semibold">
+            <button onclick="portalAction('${acme.id}', '${s.id}', '${act}')" class="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-lg font-display font-bold text-xs transition tracking-wide">
               ${act}
             </button>
           `).join("")}
@@ -489,15 +535,15 @@ async function loadPortal() {
 
   const invsBody = document.getElementById("portal-invoices-body");
   invsBody.innerHTML = pInvs.map(i => `
-    <tr>
-      <td class="p-3 font-mono font-bold text-indigo-600">${i.number}</td>
-      <td class="p-3">${i.invoice_date}</td>
-      <td class="p-3">${i.due_date}</td>
-      <td class="p-3 text-right font-mono font-bold">₹${i.total}</td>
-      <td class="p-3 text-right font-mono text-emerald-600">₹${i.amount_paid}</td>
-      <td class="p-3">${getInvoiceStatusChip(i.status, i.is_overdue)}</td>
-      <td class="p-3 text-right">
-        <button onclick="openInvoiceModal('${i.id}')" class="bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded font-semibold text-slate-700">
+    <tr class="hover:bg-[#1B2541]/50 border-b border-[#293449]/60 transition-colors">
+      <td class="p-3.5 font-mono font-black text-xs text-[#22D3EE] tracking-wide">${i.number}</td>
+      <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${i.invoice_date}</td>
+      <td class="p-3.5 text-[#A1A1AA] font-mono text-xs font-semibold">${i.due_date}</td>
+      <td class="p-3.5 text-right font-mono font-black text-sm text-white">₹${i.total}</td>
+      <td class="p-3.5 text-right font-mono font-bold text-xs text-[#22C55E]">₹${i.amount_paid}</td>
+      <td class="p-3.5">${getInvoiceStatusChip(i.status, i.is_overdue)}</td>
+      <td class="p-3.5 text-right">
+        <button onclick="openInvoiceModal('${i.id}')" class="bg-[#111A2D] hover:bg-[#1B2541] border border-[#293449] hover:border-[#6366F1] px-3 py-1.5 rounded-lg font-display font-bold text-xs text-[#A1A1AA] hover:text-[#F8FAFC] transition tracking-wide">
           View Receipt
         </button>
       </td>
@@ -535,57 +581,59 @@ function openInvoiceModal(invoiceId) {
 
   const content = document.getElementById("invoice-modal-content");
   content.innerHTML = `
-    <div class="flex justify-between items-start border-b pb-4">
+    <div class="flex justify-between items-start border-b border-[#293449] pb-4">
       <div>
-        <div class="text-sm font-bold text-slate-800">Billed To:</div>
-        <div class="text-base font-black text-slate-900">${inv.customer_snapshot.company_name || inv.customer_name}</div>
-        <div class="text-slate-500">${inv.customer_snapshot.contact_name || ''}</div>
-        <div class="text-slate-500">${inv.customer_snapshot.address || ''}</div>
-        <div class="text-slate-500">GSTIN: <span class="font-mono">${inv.customer_snapshot.tax_id || 'N/A'}</span></div>
+        <div class="micro-label text-[#A1A1AA]">Billed To</div>
+        <div class="text-xl font-black font-display tracking-tight text-white mt-1">${inv.customer_snapshot.company_name || inv.customer_name}</div>
+        <div class="text-[#A1A1AA] text-xs mt-0.5">${inv.customer_snapshot.contact_name || ''}</div>
+        <div class="text-[#A1A1AA] text-xs">${inv.customer_snapshot.address || ''}</div>
+        <div class="text-[#A1A1AA] text-xs mt-1 font-medium">GSTIN: <span class="font-mono text-[#22D3EE] font-bold">${inv.customer_snapshot.tax_id || 'N/A'}</span></div>
       </div>
       <div class="text-right">
-        <div class="font-mono text-base font-black text-indigo-600">${inv.number}</div>
-        <div>Date: <b>${inv.invoice_date}</b></div>
-        <div>Due Date: <b>${inv.due_date}</b></div>
-        <div class="mt-1">${getInvoiceStatusChip(inv.status, inv.is_overdue)}</div>
+        <div class="font-mono text-xl font-black text-[#6366F1] tracking-tight">${inv.number}</div>
+        <div class="text-xs text-[#A1A1AA] mt-1">Date: <b class="text-white font-mono">${inv.invoice_date}</b></div>
+        <div class="text-xs text-[#A1A1AA]">Due Date: <b class="text-white font-mono">${inv.due_date}</b></div>
+        <div class="mt-2.5">${getInvoiceStatusChip(inv.status, inv.is_overdue)}</div>
       </div>
     </div>
 
     <!-- Lines Table -->
-    <table class="w-full text-left text-xs border">
-      <thead class="bg-slate-100 font-semibold border-b">
-        <tr>
-          <th class="p-2">Item Description</th>
-          <th class="p-2 text-center">Qty</th>
-          <th class="p-2 text-right">Unit Price</th>
-          <th class="p-2 text-right">Discount</th>
-          <th class="p-2 text-right">Tax (GST)</th>
-          <th class="p-2 text-right">Amount</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y">
-        ${inv.lines.map(l => `
+    <div class="overflow-x-auto rounded-xl border border-[#293449]">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
           <tr>
-            <td class="p-2 font-medium">${l.description}</td>
-            <td class="p-2 text-center">${l.quantity}</td>
-            <td class="p-2 text-right font-mono">₹${l.unit_price}</td>
-            <td class="p-2 text-right font-mono text-emerald-600">₹${l.discount_amount}</td>
-            <td class="p-2 text-right font-mono">₹${l.tax_amount}</td>
-            <td class="p-2 text-right font-mono font-bold">₹${l.line_total}</td>
+            <th class="p-2.5 micro-label">Item Description</th>
+            <th class="p-2.5 micro-label text-center">Qty</th>
+            <th class="p-2.5 micro-label text-right">Unit Price</th>
+            <th class="p-2.5 micro-label text-right">Discount</th>
+            <th class="p-2.5 micro-label text-right">Tax (GST)</th>
+            <th class="p-2.5 micro-label text-right">Amount</th>
           </tr>
-        `).join("")}
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="divide-y divide-[#293449]/60 bg-[#151D32]">
+          ${inv.lines.map(l => `
+            <tr class="hover:bg-[#1B2541]/40 transition">
+              <td class="p-2.5 font-semibold text-white">${l.description}</td>
+              <td class="p-2.5 text-center text-[#A1A1AA] font-mono font-bold">${l.quantity}</td>
+              <td class="p-2.5 text-right font-mono text-[#A1A1AA]">₹${l.unit_price}</td>
+              <td class="p-2.5 text-right font-mono text-[#22C55E] font-bold">₹${l.discount_amount}</td>
+              <td class="p-2.5 text-right font-mono text-[#A1A1AA]">₹${l.tax_amount}</td>
+              <td class="p-2.5 text-right font-mono font-black text-white">₹${l.line_total}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
 
     <!-- Totals Summary -->
     <div class="flex justify-end pt-2">
-      <div class="w-64 space-y-1 text-right">
-        <div class="flex justify-between"><span>Untaxed Base:</span> <span class="font-mono">₹${inv.untaxed_total}</span></div>
-        <div class="flex justify-between text-emerald-600 font-medium"><span>Discount Savings:</span> <span class="font-mono">-₹${inv.discount_total}</span></div>
-        <div class="flex justify-between"><span>GST Taxes:</span> <span class="font-mono">₹${inv.tax_total}</span></div>
-        <div class="flex justify-between font-black text-base border-t pt-1"><span>Total Invoice:</span> <span class="font-mono text-indigo-700">₹${inv.total}</span></div>
-        <div class="flex justify-between text-emerald-700 font-bold"><span>Amount Paid:</span> <span class="font-mono">₹${inv.amount_paid}</span></div>
-        <div class="flex justify-between text-rose-600 font-black"><span>Balance Due:</span> <span class="font-mono">₹${inv.amount_due}</span></div>
+      <div class="w-72 space-y-1.5 text-right bg-[#111A2D] p-4 rounded-xl border border-[#293449] text-xs">
+        <div class="flex justify-between text-[#A1A1AA] font-medium"><span>Untaxed Base:</span> <span class="font-mono text-white font-bold">₹${inv.untaxed_total}</span></div>
+        <div class="flex justify-between text-[#22C55E] font-bold"><span>Discount Savings:</span> <span class="font-mono">-₹${inv.discount_total}</span></div>
+        <div class="flex justify-between text-[#A1A1AA] font-medium"><span>GST Taxes:</span> <span class="font-mono text-white font-bold">₹${inv.tax_total}</span></div>
+        <div class="flex justify-between font-black text-sm border-t border-[#293449] pt-2 mt-1"><span class="font-display font-bold text-white">Total Invoice:</span> <span class="font-mono text-[#22D3EE] font-black text-base">₹${inv.total}</span></div>
+        <div class="flex justify-between text-[#22C55E] font-bold"><span>Amount Paid:</span> <span class="font-mono">₹${inv.amount_paid}</span></div>
+        <div class="flex justify-between text-[#EF4444] font-black border-t border-[#293449]/60 pt-1.5"><span>Balance Due:</span> <span class="font-mono">₹${inv.amount_due}</span></div>
       </div>
     </div>
   `;
@@ -596,27 +644,28 @@ function openInvoiceModal(invoiceId) {
 
 function getStatusBadge(status, isPaused) {
   if (isPaused) {
-    return `<span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded">PAUSED</span>`;
+    return `<span class="bg-purple-500/15 text-purple-300 border border-purple-500/30 micro-label px-2.5 py-1 rounded-full">PAUSED</span>`;
   }
   const map = {
-    draft: "bg-slate-100 text-slate-700",
-    quotation: "bg-blue-100 text-blue-700",
-    confirmed: "bg-amber-100 text-amber-800",
-    active: "bg-emerald-100 text-emerald-800",
-    closed: "bg-slate-200 text-slate-700"
+    draft: "bg-slate-500/15 text-slate-300 border-slate-500/30",
+    quotation: "bg-cyan-500/15 text-[#22D3EE] border-cyan-500/30",
+    confirmed: "bg-amber-500/15 text-[#F59E0B] border-amber-500/30",
+    active: "bg-emerald-500/15 text-[#22C55E] border-emerald-500/30",
+    closed: "bg-zinc-500/15 text-[#A1A1AA] border-zinc-500/30"
   };
-  return `<span class="${map[status] || 'bg-slate-100'} text-[10px] font-bold px-2 py-0.5 rounded uppercase">${status}</span>`;
+  const cls = map[status] || 'bg-slate-500/15 text-slate-300 border-slate-500/30';
+  return `<span class="${cls} border micro-label px-2.5 py-1 rounded-full">${status}</span>`;
 }
 
 function getInvoiceStatusChip(status, isOverdue) {
   if (status === "paid") {
-    return `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">PAID</span>`;
+    return `<span class="bg-emerald-500/15 text-[#22C55E] border border-emerald-500/30 micro-label px-2.5 py-1 rounded-full">PAID</span>`;
   }
   if (isOverdue) {
-    return `<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">OVERDUE</span>`;
+    return `<span class="bg-rose-500/15 text-[#EF4444] border border-rose-500/30 micro-label px-2.5 py-1 rounded-full">OVERDUE</span>`;
   }
   if (status === "confirmed") {
-    return `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">PENDING</span>`;
+    return `<span class="bg-amber-500/15 text-[#F59E0B] border border-amber-500/30 micro-label px-2.5 py-1 rounded-full">PENDING</span>`;
   }
-  return `<span class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">${status}</span>`;
+  return `<span class="bg-slate-500/15 text-slate-300 border border-slate-500/30 micro-label px-2.5 py-1 rounded-full">${status}</span>`;
 }

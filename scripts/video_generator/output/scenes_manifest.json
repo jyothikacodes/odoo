@@ -1,0 +1,92 @@
+[
+  {
+    "id": "scene_01",
+    "image": "scene_01_dashboard.png",
+    "section": "01 / EXECUTIVE DASHBOARD",
+    "title": "Real-Time Recurring Revenue Analytics",
+    "speech_duration": 23.808,
+    "scene_duration": 25.01,
+    "audio_file": "scene_01.mp3"
+  },
+  {
+    "id": "scene_02",
+    "image": "scene_02_catalog.png",
+    "section": "02 / PRODUCT CATALOG & PLANS",
+    "title": "Dynamic Product Variants & Plan Rules",
+    "speech_duration": 20.04,
+    "scene_duration": 21.24,
+    "audio_file": "scene_02.mp3"
+  },
+  {
+    "id": "scene_03",
+    "image": "scene_03_subscriptions.png",
+    "section": "03 / SUBSCRIPTION LIFECYCLE",
+    "title": "Rigorous 5-State Lifecycle Engine",
+    "speech_duration": 24.12,
+    "scene_duration": 25.32,
+    "audio_file": "scene_03.mp3"
+  },
+  {
+    "id": "scene_04",
+    "image": "scene_04_invoices.png",
+    "section": "04 / RECURRING BILLING ENGINE",
+    "title": "Golden Vector Numeric Accuracy (\u20b93,844.44)",
+    "speech_duration": 24.672,
+    "scene_duration": 25.87,
+    "audio_file": "scene_04.mp3"
+  },
+  {
+    "id": "scene_05",
+    "image": "scene_05_payments.png",
+    "section": "05 / PAYMENT ENGINE",
+    "title": "Overpayment Guard & Instant Ledger Settlement",
+    "speech_duration": 10.344,
+    "scene_duration": 11.54,
+    "audio_file": "scene_05.mp3"
+  },
+  {
+    "id": "scene_06",
+    "image": "scene_06_ai_copilot.png",
+    "section": "06 / AI REVENUE COPILOT",
+    "title": "Autonomous Churn Risk & Health Scoring (0\u2013100)",
+    "speech_duration": 16.32,
+    "scene_duration": 17.52,
+    "audio_file": "scene_06.mp3"
+  },
+  {
+    "id": "scene_07",
+    "image": "scene_07_smart_dunning.png",
+    "section": "07 / SMART DUNNING GENERATOR",
+    "title": "Tone-Adjusted AI Retention Notices",
+    "speech_duration": 13.704,
+    "scene_duration": 14.9,
+    "audio_file": "scene_07.mp3"
+  },
+  {
+    "id": "scene_08",
+    "image": "scene_08_time_travel.png",
+    "section": "08 / TIME-TRAVEL BILLING ENGINE",
+    "title": "Virtual Clock & Automated Catch-Up Billing",
+    "speech_duration": 13.776,
+    "scene_duration": 14.98,
+    "audio_file": "scene_08.mp3"
+  },
+  {
+    "id": "scene_09",
+    "image": "scene_09_customer_portal.png",
+    "section": "09 / CUSTOMER SELF-SERVICE PORTAL",
+    "title": "Independent Client Dashboard & Tax Receipts",
+    "speech_duration": 9.792,
+    "scene_duration": 10.99,
+    "audio_file": "scene_09.mp3"
+  },
+  {
+    "id": "scene_10",
+    "image": "scene_10_architecture.png",
+    "section": "10 / ARCHITECTURE & CONCLUSION",
+    "title": "FastAPI + 100% Test Coverage + Production-Ready",
+    "speech_duration": 13.296,
+    "scene_duration": 14.5,
+    "audio_file": "scene_10.mp3"
+  }
+]

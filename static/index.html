@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brightloop — Subscription Management & Recurring Billing Platform</title>
+  <!-- Google Fonts: Outfit (Display & Dramatic Numbers), Plus Jakarta Sans (UI Body), JetBrains Mono (Financial Precision) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js for executive analytics -->
@@ -13,58 +17,106 @@
   <link rel="stylesheet" href="/static/styles.css">
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              900: '#312e81',
+            midnight: {
+              bg: '#0B1020',
+              card: '#151D32',
+              cardHover: '#1C2642',
+              input: '#111A2D',
+              border: '#293449',
+              borderLight: '#394663',
+            },
+            primary: {
+              DEFAULT: '#6366F1',
+              hover: '#4F46E5',
+              light: 'rgba(99, 102, 241, 0.15)',
+            },
+            accent: {
+              DEFAULT: '#22D3EE',
+              hover: '#06B6D4',
+              light: 'rgba(34, 211, 238, 0.15)',
+            },
+            txt: {
+              main: '#F8FAFC',
+              secondary: '#A1A1AA',
+            },
+            success: {
+              DEFAULT: '#22C55E',
+              light: 'rgba(34, 197, 94, 0.15)',
+            },
+            error: {
+              DEFAULT: '#EF4444',
+              light: 'rgba(239, 68, 68, 0.15)',
+            },
+            warning: {
+              DEFAULT: '#F59E0B',
+              light: 'rgba(245, 158, 11, 0.15)',
             }
+          },
+          fontFamily: {
+            display: ['"Outfit"', '"Space Grotesk"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          letterSpacing: {
+            'dramatic': '-0.04em',
+            'tight-header': '-0.025em',
+            'super-wide': '0.16em',
+          },
+          borderRadius: {
+            'card': '16px',
+            '2xl': '16px',
+          },
+          boxShadow: {
+            'card': '0 10px 25px -5px rgba(0, 0, 0, 0.45), 0 0 0 1px #293449',
+            'card-hover': '0 16px 32px -6px rgba(0, 0, 0, 0.55), 0 0 0 1px #3E4F6E',
+            'glow-indigo': '0 0 25px -4px rgba(99, 102, 241, 0.35)',
+            'glow-cyan': '0 0 20px -3px rgba(34, 211, 238, 0.3)',
+            'modal': '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px #293449',
           }
         }
       }
-    }
+    };
   </script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+<body class="bg-[#0B1020] text-[#F8FAFC] min-h-screen flex flex-col font-sans antialiased selection:bg-[#6366F1]/30 selection:text-white">
 
   <!-- Top Announcement Bar / Time Travel Engine -->
-  <header class="bg-slate-900 text-white px-6 py-2.5 flex flex-wrap items-center justify-between border-b border-slate-800 text-sm">
-    <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-md">
+  <header class="bg-[#0B1020]/95 backdrop-blur-md text-[#F8FAFC] px-6 py-2.5 flex flex-wrap items-center justify-between border-b border-[#293449] text-sm sticky top-0 z-40 transition-colors">
+    <div class="flex items-center space-x-3 py-1">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6366F1] to-[#22D3EE] flex items-center justify-center font-display font-black text-white shadow-lg shadow-indigo-500/25">
         B
       </div>
-      <div>
-        <span class="font-bold text-white tracking-wide text-base">Brightloop Software</span>
-        <span class="text-xs bg-indigo-500/30 text-indigo-300 font-medium px-2 py-0.5 rounded ml-2 border border-indigo-500/40">Odoo Hackathon Edition</span>
+      <div class="flex items-center">
+        <span class="font-display font-black text-white tracking-tight text-base drop-shadow-sm">Brightloop <span class="text-indigo-400 font-extrabold">Software</span></span>
+        <span class="micro-label text-[10px] bg-indigo-500/15 text-indigo-300 font-extrabold px-3 py-1 rounded-full ml-2.5 border border-indigo-500/30">Odoo Hackathon Edition</span>
       </div>
     </div>
 
     <!-- Interactive Time-Travel & Billing Day Simulator -->
-    <div class="flex items-center space-x-4 bg-slate-800/80 px-4 py-1.5 rounded-lg border border-slate-700 my-1">
-      <div class="flex items-center space-x-1.5 text-slate-300">
-        <i data-lucide="calendar" class="w-4 h-4 text-indigo-400"></i>
-        <span class="text-xs uppercase font-semibold text-slate-400">Virtual Date:</span>
-        <span id="virtual-date-badge" class="font-mono font-bold text-amber-300">2026-10-31</span>
+    <div class="flex items-center space-x-3 bg-[#111A2D] px-3.5 py-1.5 rounded-xl border border-[#293449] my-1 shadow-sm">
+      <div class="flex items-center space-x-2 text-[#A1A1AA]">
+        <i data-lucide="calendar" class="w-4 h-4 text-[#22D3EE]"></i>
+        <span class="micro-label text-[#A1A1AA] tracking-[0.14em]">Virtual Date:</span>
+        <span id="virtual-date-badge" class="font-mono font-black text-sm text-[#22D3EE] bg-[#0B1020] px-2.5 py-0.5 rounded-lg border border-[#293449] tracking-wider drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">2026-10-31</span>
       </div>
-      <button id="btn-advance-month" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-2.5 py-1 rounded transition flex items-center space-x-1 shadow-sm font-medium">
+      <button id="btn-advance-month" class="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-display text-xs px-3.5 py-1.5 rounded-lg transition-all font-bold tracking-wide flex items-center space-x-1.5 shadow-sm hover:shadow-glow-indigo active:scale-95">
         <i data-lucide="fast-forward" class="w-3.5 h-3.5"></i>
         <span>Advance 1 Month</span>
       </button>
-      <button id="btn-trigger-billing" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1 rounded transition flex items-center space-x-1 shadow-sm font-medium">
+      <button id="btn-trigger-billing" class="bg-[#22C55E] hover:bg-emerald-600 text-white font-display text-xs px-3.5 py-1.5 rounded-lg transition-all font-bold tracking-wide flex items-center space-x-1.5 shadow-sm hover:shadow-emerald-500/25 active:scale-95">
         <i data-lucide="play-circle" class="w-3.5 h-3.5"></i>
         <span>Run Billing Engine</span>
       </button>
     </div>
 
     <!-- Role Quick Switcher -->
-    <div class="flex items-center space-x-2">
-      <span class="text-xs text-slate-400">Active Role:</span>
-      <select id="role-selector" class="bg-slate-800 text-white text-xs rounded border border-slate-700 px-2 py-1 font-medium focus:ring-1 focus:ring-indigo-500 outline-none">
+    <div class="flex items-center space-x-2 py-1">
+      <span class="micro-label text-[#A1A1AA] tracking-[0.12em]">Active Role:</span>
+      <select id="role-selector" class="bg-[#111A2D] text-[#F8FAFC] font-sans text-xs rounded-lg border border-[#293449] px-3 py-1.5 font-semibold focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none cursor-pointer transition hover:border-[#394663]">
         <option value="admin">Admin (Sarah Connor)</option>
         <option value="internal">Staff (Meera Staff)</option>
         <option value="customer">Customer Portal (Rajiv Sharma - Acme)</option>
@@ -73,32 +125,32 @@
   </header>
 
   <!-- Navigation Tabs -->
-  <nav class="bg-white border-b border-slate-200 px-6 flex items-center space-x-1 shadow-sm sticky top-0 z-30 overflow-x-auto">
-    <button class="nav-tab active flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600" data-tab="dashboard">
+  <nav class="bg-[#0E1529]/95 backdrop-blur-md border-b border-[#293449] px-6 flex items-center space-x-1.5 shadow-sm sticky top-[57px] z-30 overflow-x-auto">
+    <button class="nav-tab active flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-[#6366F1] text-[#6366F1] rounded-t-lg transition-all tracking-wide" data-tab="dashboard">
       <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
       <span>Executive Dashboard</span>
     </button>
-    <button class="nav-tab flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900" data-tab="ai-copilot">
-      <i data-lucide="sparkles" class="w-4 h-4 text-purple-600"></i>
-      <span class="text-purple-700 font-bold">AI Revenue Copilot</span>
+    <button class="nav-tab flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] rounded-t-lg transition-all tracking-wide" data-tab="ai-copilot">
+      <i data-lucide="sparkles" class="w-4 h-4 text-[#22D3EE]"></i>
+      <span class="text-[#22D3EE] font-extrabold">AI Revenue Copilot</span>
     </button>
-    <button class="nav-tab flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900" data-tab="subscriptions">
+    <button class="nav-tab flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] rounded-t-lg transition-all tracking-wide" data-tab="subscriptions">
       <i data-lucide="repeat" class="w-4 h-4"></i>
       <span>Subscriptions</span>
     </button>
-    <button class="nav-tab flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900" data-tab="invoices">
+    <button class="nav-tab flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] rounded-t-lg transition-all tracking-wide" data-tab="invoices">
       <i data-lucide="receipt" class="w-4 h-4"></i>
       <span>Invoices & Billing</span>
     </button>
-    <button class="nav-tab flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900" data-tab="payments">
+    <button class="nav-tab flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] rounded-t-lg transition-all tracking-wide" data-tab="payments">
       <i data-lucide="credit-card" class="w-4 h-4"></i>
       <span>Payments & Aging</span>
     </button>
-    <button class="nav-tab flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900" data-tab="catalog">
+    <button class="nav-tab flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] rounded-t-lg transition-all tracking-wide" data-tab="catalog">
       <i data-lucide="box" class="w-4 h-4"></i>
       <span>Catalog & Plans</span>
     </button>
-    <button class="nav-tab flex items-center space-x-2 px-4 py-3.5 text-sm font-semibold border-b-2 border-transparent text-slate-600 hover:text-slate-900" data-tab="portal">
+    <button class="nav-tab flex items-center space-x-2 px-4 py-3 text-sm font-display font-bold border-b-2 border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] rounded-t-lg transition-all tracking-wide" data-tab="portal">
       <i data-lucide="user-check" class="w-4 h-4"></i>
       <span>Customer Portal</span>
     </button>
@@ -112,62 +164,62 @@
       <!-- KPI Row -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- MRR -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
-          <div class="flex items-center justify-between text-slate-500 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Monthly Recurring (MRR)</span>
-            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+        <div class="bg-[#151D32] p-5 rounded-[16px] border border-[#293449] shadow-card hover:border-[#6366F1]/50 transition-all duration-200 group">
+          <div class="flex items-center justify-between text-[#A1A1AA] mb-2.5">
+            <span class="micro-label text-[#A1A1AA]">Monthly Recurring (MRR)</span>
+            <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-[#6366F1] border border-indigo-500/25 flex items-center justify-center transition-transform group-hover:scale-105">
               <i data-lucide="trending-up" class="w-4 h-4"></i>
             </div>
           </div>
-          <div id="kpi-mrr" class="text-2xl font-black text-slate-900 font-mono">₹0.00</div>
-          <div class="text-xs text-slate-500 mt-1 flex items-center space-x-1">
+          <div id="kpi-mrr" class="text-3xl lg:text-4xl font-black font-display tracking-dramatic text-white drop-shadow-[0_2px_12px_rgba(99,102,241,0.25)]">₹0.00</div>
+          <div class="text-xs text-[#A1A1AA] mt-2.5 flex items-center space-x-1.5 font-medium">
             <span>Annual Run Rate (ARR):</span>
-            <span id="kpi-arr" class="font-bold text-slate-700 font-mono">₹0.00</span>
+            <span id="kpi-arr" class="font-bold text-white font-mono">₹0.00</span>
           </div>
         </div>
 
         <!-- Cash Collected -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
-          <div class="flex items-center justify-between text-slate-500 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Revenue Collected</span>
-            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+        <div class="bg-[#151D32] p-5 rounded-[16px] border border-[#293449] shadow-card hover:border-emerald-500/50 transition-all duration-200 group">
+          <div class="flex items-center justify-between text-[#A1A1AA] mb-2.5">
+            <span class="micro-label text-[#A1A1AA]">Revenue Collected</span>
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-[#22C55E] border border-emerald-500/25 flex items-center justify-center transition-transform group-hover:scale-105">
               <i data-lucide="wallet" class="w-4 h-4"></i>
             </div>
           </div>
-          <div id="kpi-collected" class="text-2xl font-black text-emerald-600 font-mono">₹0.00</div>
-          <div class="text-xs text-slate-500 mt-1 flex items-center space-x-1">
+          <div id="kpi-collected" class="text-3xl lg:text-4xl font-black font-display tracking-dramatic text-[#22C55E] drop-shadow-[0_2px_12px_rgba(34,197,94,0.25)]">₹0.00</div>
+          <div class="text-xs text-[#A1A1AA] mt-2.5 flex items-center space-x-1.5 font-medium">
             <span>Total Invoiced:</span>
-            <span id="kpi-invoiced" class="font-bold text-slate-700 font-mono">₹0.00</span>
+            <span id="kpi-invoiced" class="font-bold text-white font-mono">₹0.00</span>
           </div>
         </div>
 
         <!-- Overdue Invoices -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
-          <div class="flex items-center justify-between text-slate-500 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Overdue Invoices</span>
-            <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+        <div class="bg-[#151D32] p-5 rounded-[16px] border border-[#293449] shadow-card hover:border-rose-500/50 transition-all duration-200 group">
+          <div class="flex items-center justify-between text-[#A1A1AA] mb-2.5">
+            <span class="micro-label text-[#A1A1AA]">Overdue Invoices</span>
+            <div class="w-9 h-9 rounded-xl bg-rose-500/15 text-[#EF4444] border border-rose-500/25 flex items-center justify-center transition-transform group-hover:scale-105">
               <i data-lucide="alert-circle" class="w-4 h-4"></i>
             </div>
           </div>
-          <div id="kpi-overdue-amt" class="text-2xl font-black text-rose-600 font-mono">₹0.00</div>
-          <div class="text-xs text-slate-500 mt-1">
-            <span id="kpi-overdue-count" class="font-bold text-rose-700">0</span> overdue invoices requiring chase
+          <div id="kpi-overdue-amt" class="text-3xl lg:text-4xl font-black font-display tracking-dramatic text-[#EF4444] drop-shadow-[0_2px_12px_rgba(239,68,68,0.25)]">₹0.00</div>
+          <div class="text-xs text-[#A1A1AA] mt-2.5 font-medium">
+            <span id="kpi-overdue-count" class="font-extrabold text-[#EF4444]">0</span> overdue invoices requiring chase
           </div>
         </div>
 
         <!-- Active Subscriptions -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow transition">
-          <div class="flex items-center justify-between text-slate-500 mb-2">
-            <span class="text-xs font-semibold uppercase tracking-wider">Active Subscriptions</span>
-            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+        <div class="bg-[#151D32] p-5 rounded-[16px] border border-[#293449] shadow-card hover:border-cyan-500/50 transition-all duration-200 group">
+          <div class="flex items-center justify-between text-[#A1A1AA] mb-2.5">
+            <span class="micro-label text-[#A1A1AA]">Active Subscriptions</span>
+            <div class="w-9 h-9 rounded-xl bg-cyan-500/15 text-[#22D3EE] border border-cyan-500/25 flex items-center justify-center transition-transform group-hover:scale-105">
               <i data-lucide="users" class="w-4 h-4"></i>
             </div>
           </div>
-          <div id="kpi-active-subs" class="text-2xl font-black text-slate-900 font-mono">0</div>
-          <div class="text-xs text-slate-500 mt-1 flex items-center space-x-2">
-            <span>Paused: <b id="kpi-paused-subs" class="text-slate-700">0</b></span>
+          <div id="kpi-active-subs" class="text-3xl lg:text-4xl font-black font-display tracking-dramatic text-[#22D3EE] drop-shadow-[0_2px_12px_rgba(34,211,238,0.25)]">0</div>
+          <div class="text-xs text-[#A1A1AA] mt-2.5 flex items-center space-x-2 font-medium">
+            <span>Paused: <b id="kpi-paused-subs" class="text-white font-bold">0</b></span>
             <span>•</span>
-            <span>Quotation: <b id="kpi-quote-subs" class="text-slate-700">0</b></span>
+            <span>Quotation: <b id="kpi-quote-subs" class="text-white font-bold">0</b></span>
           </div>
         </div>
       </div>
@@ -175,13 +227,13 @@
       <!-- Charts & Aging Section -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Cashflow Trend Chart -->
-        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div class="lg:col-span-2 bg-[#151D32] p-6 rounded-[16px] border border-[#293449] shadow-card">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="font-bold text-slate-900">Revenue & Cashflow Performance</h3>
-              <p class="text-xs text-slate-500">Invoiced Accruals vs Cash Collections</p>
+              <h3 class="font-display font-extrabold text-white text-lg tracking-tight">Revenue & Cashflow Performance</h3>
+              <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Invoiced Accruals vs Cash Collections</p>
             </div>
-            <span class="text-xs bg-slate-100 text-slate-600 font-medium px-2 py-1 rounded">Live Data</span>
+            <span class="micro-label text-indigo-300 bg-indigo-500/15 border border-indigo-500/30 px-3 py-1 rounded-full">Live Data</span>
           </div>
           <div class="h-64">
             <canvas id="cashflow-chart"></canvas>
@@ -189,57 +241,57 @@
         </div>
 
         <!-- Overdue Aging Buckets -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="bg-[#151D32] p-6 rounded-[16px] border border-[#293449] shadow-card space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="font-bold text-slate-900">Overdue Aging Buckets</h3>
-            <span class="text-xs bg-rose-50 text-rose-700 font-semibold px-2 py-0.5 rounded">Risk Report</span>
+            <h3 class="font-display font-extrabold text-white text-lg tracking-tight">Overdue Aging Buckets</h3>
+            <span class="micro-label text-rose-400 bg-rose-500/15 border border-rose-500/30 px-3 py-1 rounded-full">Risk Report</span>
           </div>
-          <p class="text-xs text-slate-500">Breakdown of unpaid invoices past due date by duration.</p>
+          <p class="text-xs text-[#A1A1AA] font-medium">Breakdown of unpaid invoices past due date by duration.</p>
           
-          <div class="space-y-3 pt-2">
+          <div class="space-y-3.5 pt-1">
             <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-600">1 – 30 Days</span>
-                <span id="aging-1-30" class="font-bold font-mono text-slate-900">₹0.00</span>
+              <div class="flex justify-between text-xs font-semibold mb-1.5">
+                <span class="text-[#A1A1AA]">1 – 30 Days</span>
+                <span id="aging-1-30" class="font-bold font-mono text-white text-sm">₹0.00</span>
               </div>
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="bar-1-30" class="bg-amber-400 h-full w-0 transition-all"></div>
+              <div class="w-full bg-[#111A2D] h-2 rounded-full overflow-hidden border border-[#293449]/60">
+                <div id="bar-1-30" class="bg-amber-400 h-full w-0 transition-all rounded-full"></div>
               </div>
             </div>
 
             <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-600">31 – 60 Days</span>
-                <span id="aging-31-60" class="font-bold font-mono text-slate-900">₹0.00</span>
+              <div class="flex justify-between text-xs font-semibold mb-1.5">
+                <span class="text-[#A1A1AA]">31 – 60 Days</span>
+                <span id="aging-31-60" class="font-bold font-mono text-white text-sm">₹0.00</span>
               </div>
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="bar-31-60" class="bg-orange-500 h-full w-0 transition-all"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-600">61 – 90 Days</span>
-                <span id="aging-61-90" class="font-bold font-mono text-slate-900">₹0.00</span>
-              </div>
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="bar-61-90" class="bg-rose-500 h-full w-0 transition-all"></div>
+              <div class="w-full bg-[#111A2D] h-2 rounded-full overflow-hidden border border-[#293449]/60">
+                <div id="bar-31-60" class="bg-orange-500 h-full w-0 transition-all rounded-full"></div>
               </div>
             </div>
 
             <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-600">90+ Days (Critical)</span>
-                <span id="aging-90-plus" class="font-bold font-mono text-rose-600">₹0.00</span>
+              <div class="flex justify-between text-xs font-semibold mb-1.5">
+                <span class="text-[#A1A1AA]">61 – 90 Days</span>
+                <span id="aging-61-90" class="font-bold font-mono text-white text-sm">₹0.00</span>
               </div>
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="bar-90-plus" class="bg-rose-700 h-full w-0 transition-all"></div>
+              <div class="w-full bg-[#111A2D] h-2 rounded-full overflow-hidden border border-[#293449]/60">
+                <div id="bar-61-90" class="bg-rose-500 h-full w-0 transition-all rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1.5">
+                <span class="text-[#A1A1AA]">90+ Days (Critical)</span>
+                <span id="aging-90-plus" class="font-black font-mono text-[#EF4444] text-sm">₹0.00</span>
+              </div>
+              <div class="w-full bg-[#111A2D] h-2 rounded-full overflow-hidden border border-[#293449]/60">
+                <div id="bar-90-plus" class="bg-rose-600 h-full w-0 transition-all rounded-full"></div>
               </div>
             </div>
           </div>
 
-          <div class="pt-4 border-t border-slate-100">
-            <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Top Overdue Accounts</h4>
+          <div class="pt-4 border-t border-[#293449]">
+            <h4 class="micro-label text-[#A1A1AA] mb-2.5">Top Overdue Accounts</h4>
             <div id="top-overdue-list" class="space-y-2 text-xs">
               <!-- Rendered via JS -->
             </div>
@@ -250,14 +302,14 @@
 
     <!-- TAB 2: AI REVENUE COPILOT (INNOVATION FEATURE) -->
     <section id="tab-ai-copilot" class="tab-pane hidden space-y-6">
-      <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-950 via-[#151D32] to-[#0B1020] border border-indigo-500/30 text-white p-7 rounded-[16px] shadow-card relative overflow-hidden">
         <div class="relative z-10 max-w-2xl">
-          <div class="inline-flex items-center space-x-1.5 bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-xs font-bold border border-purple-500/30 mb-3">
+          <div class="inline-flex items-center space-x-1.5 bg-[#22D3EE]/15 text-[#22D3EE] px-3.5 py-1 rounded-full micro-label border border-[#22D3EE]/30 mb-3">
             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
             <span>Autonomous Revenue Intelligence</span>
           </div>
-          <h2 class="text-2xl font-black tracking-tight">Brightloop AI Revenue Copilot</h2>
-          <p class="text-purple-200 text-sm mt-1">
+          <h2 class="text-3xl sm:text-4xl font-black font-display tracking-dramatic bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">Brightloop AI Revenue Copilot</h2>
+          <p class="text-[#A1A1AA] text-sm mt-1.5 font-medium leading-relaxed">
             Real-time churn risk prediction, health scoring, and autonomous AI dunning generation to eliminate revenue leakage before missed renewals happen.
           </p>
         </div>
@@ -265,31 +317,31 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Customer Churn Health Matrix -->
-        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div class="lg:col-span-2 bg-[#151D32] p-6 rounded-[16px] border border-[#293449] shadow-card space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="font-bold text-slate-900">Predictive Customer Health & Churn Risk</h3>
-              <p class="text-xs text-slate-500">Autonomous evaluation based on payment lag, subscription tenure, and contract renewals</p>
+              <h3 class="font-display font-extrabold text-white text-lg tracking-tight">Predictive Customer Health & Churn Risk</h3>
+              <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Autonomous evaluation based on payment lag, subscription tenure, and contract renewals</p>
             </div>
-            <button id="btn-refresh-copilot" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center space-x-1">
+            <button id="btn-refresh-copilot" class="text-xs text-[#22D3EE] hover:text-cyan-300 font-display font-bold flex items-center space-x-1.5 transition">
               <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
               <span>Re-analyze</span>
             </button>
           </div>
 
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto rounded-xl border border-[#293449]">
             <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b">
+              <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
                 <tr>
-                  <th class="p-3">Customer Account</th>
-                  <th class="p-3">Health Score</th>
-                  <th class="p-3">Churn Risk</th>
-                  <th class="p-3">Max Delinquency</th>
-                  <th class="p-3">Action Recommendation</th>
-                  <th class="p-3 text-right">Smart Action</th>
+                  <th class="p-3.5 micro-label">Customer Account</th>
+                  <th class="p-3.5 micro-label">Health Score</th>
+                  <th class="p-3.5 micro-label">Churn Risk</th>
+                  <th class="p-3.5 micro-label">Max Delinquency</th>
+                  <th class="p-3.5 micro-label">Action Recommendation</th>
+                  <th class="p-3.5 micro-label text-right">Smart Action</th>
                 </tr>
               </thead>
-              <tbody id="copilot-customer-table" class="divide-y divide-slate-100">
+              <tbody id="copilot-customer-table" class="divide-y divide-[#293449]/60">
                 <!-- Loaded via JS -->
               </tbody>
             </table>
@@ -297,43 +349,43 @@
         </div>
 
         <!-- AI Smart Dunning Generator Box -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-7 h-7 rounded bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+        <div class="bg-[#151D32] p-6 rounded-[16px] border border-[#293449] shadow-card space-y-4">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-[#6366F1] border border-indigo-500/25 flex items-center justify-center font-bold">
               <i data-lucide="mail" class="w-4 h-4"></i>
             </div>
-            <h3 class="font-bold text-slate-900">AI Smart Dunning Generator</h3>
+            <h3 class="font-display font-extrabold text-white text-lg tracking-tight">AI Smart Dunning Generator</h3>
           </div>
-          <p class="text-xs text-slate-500">Select an overdue invoice to generate a customized, tone-adjusted retention email.</p>
+          <p class="text-xs text-[#A1A1AA] font-medium">Select an overdue invoice to generate a customized, tone-adjusted retention email.</p>
 
-          <div class="space-y-3">
+          <div class="space-y-3.5">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Target Overdue Invoice:</label>
-              <select id="copilot-invoice-select" class="w-full text-xs bg-slate-50 border border-slate-200 rounded p-2 focus:ring-1 focus:ring-indigo-500">
+              <label class="block micro-label text-[#A1A1AA] mb-1.5">Target Overdue Invoice:</label>
+              <select id="copilot-invoice-select" class="w-full text-xs bg-[#111A2D] border border-[#293449] rounded-xl p-2.5 text-[#F8FAFC] font-sans font-medium focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none transition">
                 <!-- Invoices populated here -->
               </select>
             </div>
 
-            <button id="btn-generate-dunning" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs py-2 rounded shadow transition flex items-center justify-center space-x-1.5">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <button id="btn-generate-dunning" class="w-full bg-[#6366F1] hover:bg-[#4F46E5] text-white font-display font-bold text-xs py-2.5 px-4 rounded-xl shadow-md hover:shadow-glow-indigo transition flex items-center justify-center space-x-1.5 active:scale-98 tracking-wide">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#22D3EE]"></i>
               <span>Generate Personalized Dunning</span>
             </button>
 
             <!-- Generated Output Area -->
-            <div id="copilot-dunning-output" class="hidden space-y-2 pt-2 border-t border-slate-100">
+            <div id="copilot-dunning-output" class="hidden space-y-3 pt-3 border-t border-[#293449]">
               <div class="flex items-center justify-between text-xs">
-                <span class="font-semibold text-slate-600">Calculated Tone:</span>
-                <span id="dunning-tone-badge" class="font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded"></span>
+                <span class="micro-label text-[#A1A1AA]">Calculated Tone:</span>
+                <span id="dunning-tone-badge" class="font-display font-black text-[#22D3EE] bg-cyan-500/15 border border-cyan-500/30 px-3 py-0.5 rounded-full text-xs"></span>
               </div>
               <div>
-                <span class="text-xs font-semibold text-slate-600">Subject:</span>
-                <div id="dunning-subject" class="text-xs font-bold text-slate-800 bg-slate-50 p-2 rounded border mt-0.5"></div>
+                <span class="micro-label text-[#A1A1AA]">Subject:</span>
+                <div id="dunning-subject" class="text-xs font-bold text-[#F8FAFC] bg-[#111A2D] p-2.5 rounded-xl border border-[#293449] mt-1 font-sans"></div>
               </div>
               <div>
-                <span class="text-xs font-semibold text-slate-600">Email Draft:</span>
-                <textarea id="dunning-body" rows="6" class="w-full text-xs font-mono bg-slate-50 border border-slate-200 rounded p-2 text-slate-700 mt-0.5" readonly></textarea>
+                <span class="micro-label text-[#A1A1AA]">Email Draft:</span>
+                <textarea id="dunning-body" rows="6" class="w-full text-xs font-mono bg-[#111A2D] border border-[#293449] rounded-xl p-2.5 text-[#F8FAFC] mt-1 focus:border-[#6366F1] outline-none leading-relaxed" readonly></textarea>
               </div>
-              <button onclick="alert('Smart Dunning email dispatched to customer successfully!')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs py-2 rounded shadow transition">
+              <button onclick="alert('Smart Dunning email dispatched to customer successfully!')" class="w-full bg-[#22C55E] hover:bg-emerald-600 text-white font-display font-bold text-xs py-2.5 rounded-xl shadow-md hover:shadow-emerald-500/25 transition tracking-wide">
                 Send Dunning via Outbox
               </button>
             </div>
@@ -346,39 +398,39 @@
     <section id="tab-subscriptions" class="tab-pane hidden space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Subscription Contracts</h2>
-          <p class="text-xs text-slate-500">Draft ▸ Quotation ▸ Confirmed ▸ Active ▸ Closed lifecycle management</p>
+          <h2 class="text-2xl sm:text-3xl font-black font-display tracking-dramatic text-white">Subscription Contracts</h2>
+          <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Draft ▸ Quotation ▸ Confirmed ▸ Active ▸ Closed lifecycle management</p>
         </div>
-        <div class="flex items-center space-x-2">
-          <button id="btn-open-create-sub" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center space-x-1.5 shadow-sm transition">
+        <div class="flex items-center space-x-2.5">
+          <button id="btn-open-create-sub" class="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-display text-xs px-4 py-2.5 rounded-xl font-bold tracking-wide flex items-center space-x-1.5 shadow-md hover:shadow-glow-indigo transition">
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>New Subscription</span>
           </button>
-          <button id="btn-create-from-tpl" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center space-x-1.5 shadow-sm transition">
-            <i data-lucide="file-copy" class="w-4 h-4"></i>
+          <button id="btn-create-from-tpl" class="bg-[#111A2D] hover:bg-[#1B2541] text-[#F8FAFC] border border-[#293449] font-display text-xs px-4 py-2.5 rounded-xl font-bold tracking-wide flex items-center space-x-1.5 transition">
+            <i data-lucide="file-copy" class="w-4 h-4 text-[#A1A1AA]"></i>
             <span>From Template</span>
           </button>
         </div>
       </div>
 
       <!-- Subscriptions Table -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-[#151D32] rounded-[16px] border border-[#293449] shadow-card overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b">
+            <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
               <tr>
-                <th class="p-3">Sub Number</th>
-                <th class="p-3">Customer</th>
-                <th class="p-3">Plan</th>
-                <th class="p-3">Status</th>
-                <th class="p-3">Start Date</th>
-                <th class="p-3">Expiry Date</th>
-                <th class="p-3">Next Billing</th>
-                <th class="p-3 text-right">Recurring Total</th>
-                <th class="p-3 text-right">Lifecycle Actions</th>
+                <th class="p-3.5 micro-label">Sub Number</th>
+                <th class="p-3.5 micro-label">Customer</th>
+                <th class="p-3.5 micro-label">Plan</th>
+                <th class="p-3.5 micro-label">Status</th>
+                <th class="p-3.5 micro-label">Start Date</th>
+                <th class="p-3.5 micro-label">Expiry Date</th>
+                <th class="p-3.5 micro-label">Next Billing</th>
+                <th class="p-3.5 micro-label text-right">Recurring Total</th>
+                <th class="p-3.5 micro-label text-right">Lifecycle Actions</th>
               </tr>
             </thead>
-            <tbody id="subscriptions-table-body" class="divide-y divide-slate-100">
+            <tbody id="subscriptions-table-body" class="divide-y divide-[#293449]/60">
               <!-- Loaded via JS -->
             </tbody>
           </table>
@@ -390,37 +442,37 @@
     <section id="tab-invoices" class="tab-pane hidden space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Invoices & Billing Runs</h2>
-          <p class="text-xs text-slate-500">Automated recurring invoice generation, GST calculations & payment status</p>
+          <h2 class="text-2xl sm:text-3xl font-black font-display tracking-dramatic text-white">Invoices & Billing Runs</h2>
+          <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Automated recurring invoice generation, GST calculations & payment status</p>
         </div>
         <div class="flex items-center space-x-2">
-          <button id="btn-manual-billing" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center space-x-1.5 shadow-sm transition">
+          <button id="btn-manual-billing" class="bg-[#22C55E] hover:bg-emerald-600 text-white font-display text-xs px-4 py-2.5 rounded-xl font-bold tracking-wide flex items-center space-x-1.5 shadow-md hover:shadow-emerald-500/25 transition">
             <i data-lucide="zap" class="w-4 h-4"></i>
             <span>Execute Billing Run</span>
           </button>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-[#151D32] rounded-[16px] border border-[#293449] shadow-card overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b">
+            <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
               <tr>
-                <th class="p-3">Invoice Number</th>
-                <th class="p-3">Customer</th>
-                <th class="p-3">Invoice Date</th>
-                <th class="p-3">Due Date</th>
-                <th class="p-3 text-right">Untaxed</th>
-                <th class="p-3 text-right">Discount</th>
-                <th class="p-3 text-right">Tax (GST)</th>
-                <th class="p-3 text-right">Total Amount</th>
-                <th class="p-3 text-right">Paid</th>
-                <th class="p-3 text-right">Balance Due</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
+                <th class="p-3.5 micro-label">Invoice Number</th>
+                <th class="p-3.5 micro-label">Customer</th>
+                <th class="p-3.5 micro-label">Invoice Date</th>
+                <th class="p-3.5 micro-label">Due Date</th>
+                <th class="p-3.5 micro-label text-right">Untaxed</th>
+                <th class="p-3.5 micro-label text-right">Discount</th>
+                <th class="p-3.5 micro-label text-right">Tax (GST)</th>
+                <th class="p-3.5 micro-label text-right">Total Amount</th>
+                <th class="p-3.5 micro-label text-right">Paid</th>
+                <th class="p-3.5 micro-label text-right">Balance Due</th>
+                <th class="p-3.5 micro-label">Status</th>
+                <th class="p-3.5 micro-label text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="invoices-table-body" class="divide-y divide-slate-100">
+            <tbody id="invoices-table-body" class="divide-y divide-[#293449]/60">
               <!-- Loaded via JS -->
             </tbody>
           </table>
@@ -432,28 +484,28 @@
     <section id="tab-payments" class="tab-pane hidden space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Payment Reconciliation</h2>
-          <p class="text-xs text-slate-500">Record payments against invoices, manage reversals and trace receipts</p>
+          <h2 class="text-2xl sm:text-3xl font-black font-display tracking-dramatic text-white">Payment Reconciliation</h2>
+          <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Record payments against invoices, manage reversals and trace receipts</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-[#151D32] rounded-[16px] border border-[#293449] shadow-card overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-semibold border-b">
+            <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
               <tr>
-                <th class="p-3">Payment #</th>
-                <th class="p-3">Invoice #</th>
-                <th class="p-3">Customer</th>
-                <th class="p-3">Method</th>
-                <th class="p-3">Date</th>
-                <th class="p-3">Reference</th>
-                <th class="p-3 text-right">Amount</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Actions</th>
+                <th class="p-3.5 micro-label">Payment #</th>
+                <th class="p-3.5 micro-label">Invoice #</th>
+                <th class="p-3.5 micro-label">Customer</th>
+                <th class="p-3.5 micro-label">Method</th>
+                <th class="p-3.5 micro-label">Date</th>
+                <th class="p-3.5 micro-label">Reference</th>
+                <th class="p-3.5 micro-label text-right">Amount</th>
+                <th class="p-3.5 micro-label">Status</th>
+                <th class="p-3.5 micro-label text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="payments-table-body" class="divide-y divide-slate-100">
+            <tbody id="payments-table-body" class="divide-y divide-[#293449]/60">
               <!-- Loaded via JS -->
             </tbody>
           </table>
@@ -465,18 +517,22 @@
     <section id="tab-catalog" class="tab-pane hidden space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Products & Variants -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-          <h3 class="font-bold text-slate-900 text-base">Catalog Products & Variants</h3>
-          <p class="text-xs text-slate-500">Supports variant price additives (e.g. Brand=Odoo adds ₹560.00)</p>
+        <div class="bg-[#151D32] p-6 rounded-[16px] border border-[#293449] shadow-card space-y-4">
+          <div>
+            <h3 class="font-display font-extrabold text-white text-lg tracking-tight">Catalog Products & Variants</h3>
+            <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Supports variant price additives (e.g. Brand=Odoo adds ₹560.00)</p>
+          </div>
           <div id="catalog-products-list" class="space-y-3">
             <!-- Loaded via JS -->
           </div>
         </div>
 
         <!-- Subscription Plans -->
-        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
-          <h3 class="font-bold text-slate-900 text-base">Subscription Plans & Rules</h3>
-          <p class="text-xs text-slate-500">Configurable recurring periods, minimum quantities & lifecycle flags</p>
+        <div class="bg-[#151D32] p-6 rounded-[16px] border border-[#293449] shadow-card space-y-4">
+          <div>
+            <h3 class="font-display font-extrabold text-white text-lg tracking-tight">Subscription Plans & Rules</h3>
+            <p class="text-xs text-[#A1A1AA] mt-0.5 font-medium">Configurable recurring periods, minimum quantities & lifecycle flags</p>
+          </div>
           <div id="catalog-plans-list" class="space-y-3">
             <!-- Loaded via JS -->
           </div>
@@ -486,41 +542,41 @@
 
     <!-- TAB 7: CUSTOMER PORTAL -->
     <section id="tab-portal" class="tab-pane hidden space-y-6">
-      <div class="bg-indigo-50 border border-indigo-200 p-5 rounded-xl flex items-center justify-between">
+      <div class="bg-gradient-to-r from-indigo-950/60 via-[#151D32] to-[#111A2D] border border-indigo-500/30 p-6 rounded-[16px] shadow-card flex items-center justify-between">
         <div>
-          <div class="inline-flex items-center space-x-1 text-indigo-700 font-bold text-xs uppercase tracking-wide mb-1">
+          <div class="inline-flex items-center space-x-1.5 text-[#22D3EE] font-display font-bold text-xs uppercase tracking-super-wide mb-1">
             <i data-lucide="shield" class="w-3.5 h-3.5"></i>
             <span>Customer Self-Service View</span>
           </div>
-          <h3 class="text-lg font-black text-slate-900">Welcome, Rajiv Sharma (Acme Pvt Ltd)</h3>
-          <p class="text-xs text-slate-600">Access your active contracts, quotation approvals, and invoice receipts.</p>
+          <h3 class="text-xl sm:text-2xl font-black font-display tracking-dramatic text-white">Welcome, Rajiv Sharma <span class="text-indigo-300 font-extrabold">(Acme Pvt Ltd)</span></h3>
+          <p class="text-xs text-[#A1A1AA] mt-1 font-medium">Access your active contracts, quotation approvals, and invoice receipts.</p>
         </div>
-        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-300">
+        <span class="micro-label bg-emerald-500/15 text-[#22C55E] px-3.5 py-1.5 rounded-full border border-emerald-500/30">
           Account Active
         </span>
       </div>
 
       <div class="space-y-4">
-        <h4 class="font-bold text-slate-800 text-sm">My Active Subscriptions</h4>
+        <h4 class="font-display font-bold text-white text-base tracking-tight">My Active Subscriptions</h4>
         <div id="portal-subs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Loaded via JS -->
         </div>
 
-        <h4 class="font-bold text-slate-800 text-sm pt-4">My Invoices & Receipts</h4>
-        <div id="portal-invoices-container" class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <h4 class="font-display font-bold text-white text-base tracking-tight pt-4">My Invoices & Receipts</h4>
+        <div id="portal-invoices-container" class="bg-[#151D32] rounded-[16px] border border-[#293449] overflow-hidden shadow-card">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-50 text-slate-500 uppercase font-semibold border-b">
+            <thead class="bg-[#111A2D] text-[#A1A1AA] border-b border-[#293449]">
               <tr>
-                <th class="p-3">Invoice #</th>
-                <th class="p-3">Date</th>
-                <th class="p-3">Due Date</th>
-                <th class="p-3 text-right">Amount</th>
-                <th class="p-3 text-right">Paid</th>
-                <th class="p-3">Status</th>
-                <th class="p-3 text-right">Action</th>
+                <th class="p-3.5 micro-label">Invoice #</th>
+                <th class="p-3.5 micro-label">Date</th>
+                <th class="p-3.5 micro-label">Due Date</th>
+                <th class="p-3.5 micro-label text-right">Amount</th>
+                <th class="p-3.5 micro-label text-right">Paid</th>
+                <th class="p-3.5 micro-label">Status</th>
+                <th class="p-3.5 micro-label text-right">Action</th>
               </tr>
             </thead>
-            <tbody id="portal-invoices-body" class="divide-y divide-slate-100">
+            <tbody id="portal-invoices-body" class="divide-y divide-[#293449]/60">
               <!-- Loaded via JS -->
             </tbody>
           </table>
@@ -530,27 +586,27 @@
   </main>
 
   <!-- MODAL: RECORD PAYMENT -->
-  <div id="modal-record-payment" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b pb-3">
-        <h3 class="font-bold text-slate-900">Record Customer Payment</h3>
-        <button onclick="document.getElementById('modal-record-payment').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
+  <div id="modal-record-payment" class="fixed inset-0 bg-[#0B1020]/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+    <div class="bg-[#151D32] rounded-[16px] border border-[#293449] max-w-md w-full p-6 shadow-modal space-y-4 text-[#F8FAFC]">
+      <div class="flex items-center justify-between border-b border-[#293449] pb-3">
+        <h3 class="font-display font-black text-white text-lg tracking-tight">Record Customer Payment</h3>
+        <button onclick="document.getElementById('modal-record-payment').classList.add('hidden')" class="text-[#A1A1AA] hover:text-[#F8FAFC] transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
-      <form id="form-record-payment" class="space-y-3 text-xs">
+      <form id="form-record-payment" class="space-y-3.5 text-xs">
         <input type="hidden" id="pay-invoice-id">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Invoice Target:</label>
-          <input type="text" id="pay-invoice-number" class="w-full bg-slate-100 p-2 rounded border font-mono" readonly>
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Invoice Target:</label>
+          <input type="text" id="pay-invoice-number" class="w-full bg-[#111A2D] text-[#F8FAFC] p-2.5 rounded-xl border border-[#293449] font-mono outline-none" readonly>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Outstanding Balance (Max):</label>
-          <input type="text" id="pay-max-amount" class="w-full bg-slate-100 p-2 rounded border font-bold font-mono text-rose-600" readonly>
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Outstanding Balance (Max):</label>
+          <input type="text" id="pay-max-amount" class="w-full bg-[#111A2D] text-[#EF4444] p-2.5 rounded-xl border border-[#293449] font-black font-mono text-sm outline-none" readonly>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Payment Method:</label>
-          <select id="pay-method" class="w-full border p-2 rounded bg-white">
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Payment Method:</label>
+          <select id="pay-method" class="w-full border border-[#293449] p-2.5 rounded-xl bg-[#111A2D] text-[#F8FAFC] font-semibold focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none">
             <option value="bank_transfer">Bank Transfer (NEFT/RTGS)</option>
             <option value="upi">UPI / Instant Pay</option>
             <option value="credit_card">Credit Card</option>
@@ -559,23 +615,23 @@
           </select>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Amount (₹):</label>
-          <input type="number" step="0.01" id="pay-amount" class="w-full border p-2 rounded font-mono font-bold" required>
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Amount (₹):</label>
+          <input type="number" step="0.01" id="pay-amount" class="w-full border border-[#293449] bg-[#111A2D] text-[#F8FAFC] p-2.5 rounded-xl font-mono font-bold text-sm focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none" required>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Payment Date:</label>
-          <input type="date" id="pay-date" class="w-full border p-2 rounded" required>
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Payment Date:</label>
+          <input type="date" id="pay-date" class="w-full border border-[#293449] bg-[#111A2D] text-[#F8FAFC] p-2.5 rounded-xl font-mono focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none" required>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Reference / Transaction ID:</label>
-          <input type="text" id="pay-reference" class="w-full border p-2 rounded" placeholder="e.g. TXN-123456">
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Reference / Transaction ID:</label>
+          <input type="text" id="pay-reference" class="w-full border border-[#293449] bg-[#111A2D] text-[#F8FAFC] p-2.5 rounded-xl placeholder-[#A1A1AA]/50 font-mono focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none" placeholder="e.g. TXN-123456">
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Internal Note:</label>
-          <textarea id="pay-note" rows="2" class="w-full border p-2 rounded"></textarea>
+          <label class="block micro-label text-[#A1A1AA] mb-1.5">Internal Note:</label>
+          <textarea id="pay-note" rows="2" class="w-full border border-[#293449] bg-[#111A2D] text-[#F8FAFC] p-2.5 rounded-xl focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] outline-none"></textarea>
         </div>
-        <div class="pt-3 flex space-x-2">
-          <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow transition">
+        <div class="pt-2 flex space-x-2">
+          <button type="submit" class="flex-1 bg-[#22C55E] hover:bg-emerald-600 text-white font-display font-bold py-2.5 rounded-xl shadow-md hover:shadow-emerald-500/25 transition text-xs tracking-wide">
             Confirm Payment
           </button>
         </div>
@@ -584,14 +640,14 @@
   </div>
 
   <!-- MODAL: VIEW INVOICE PRINTABLE RECEIPT -->
-  <div id="modal-view-invoice" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-2xl w-full p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b pb-4">
+  <div id="modal-view-invoice" class="fixed inset-0 bg-[#0B1020]/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+    <div class="bg-[#151D32] rounded-[16px] border border-[#293449] max-w-2xl w-full p-8 shadow-modal space-y-6 max-h-[90vh] overflow-y-auto text-[#F8FAFC]">
+      <div class="flex items-center justify-between border-b border-[#293449] pb-4">
         <div>
-          <h2 class="text-xl font-black text-slate-900">Tax Invoice Receipt</h2>
-          <span class="text-xs text-slate-500">Brightloop Software Platform</span>
+          <h2 class="text-2xl font-black font-display tracking-dramatic text-white">Tax Invoice Receipt</h2>
+          <span class="micro-label text-[#A1A1AA]">Brightloop Software Platform</span>
         </div>
-        <button onclick="document.getElementById('modal-view-invoice').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
+        <button onclick="document.getElementById('modal-view-invoice').classList.add('hidden')" class="text-[#A1A1AA] hover:text-[#F8FAFC] transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -600,9 +656,9 @@
         <!-- Rendered via JS -->
       </div>
 
-      <div class="pt-4 border-t flex justify-end space-x-2">
-        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2 rounded font-semibold flex items-center space-x-1">
-          <i data-lucide="printer" class="w-4 h-4"></i>
+      <div class="pt-4 border-t border-[#293449] flex justify-end space-x-2">
+        <button onclick="window.print()" class="bg-[#111A2D] hover:bg-[#1B2541] text-[#F8FAFC] border border-[#293449] text-xs px-4 py-2.5 rounded-xl font-display font-bold flex items-center space-x-2 transition tracking-wide">
+          <i data-lucide="printer" class="w-4 h-4 text-[#22D3EE]"></i>
           <span>Print Receipt</span>
         </button>
       </div>
